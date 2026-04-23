@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prime South – פתרונות קריאייטיב ודיגיטל</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+  /* ════════════════════════════════════════════
+     RESET & BASE
+  ════════════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold:      #c9a84c;
+    --gold-lt:   #e8c96a;
+    --gold-dk:   #a07830;
+    --navy:      #09091a;
+    --navy2:     #0f0f24;
+    --navy3:     #161630;
+    --surface:   #1a1a35;
+    --border:    rgba(201,168,76,.18);
+    --text:      #f2ede3;
+    --muted:     #8888aa;
+    --r:         14px;
+    --wa-green:  #075E54;
+    --wa-green2: #128C7E;
+    --wa-bubble: #DCF8C6;
+    --wa-bg:     #ECE5DD;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── Marble vein texture (CSS only) ── */
+  .marble {
+    position: relative;
+    overflow: hidden;
+  }
+  .marble::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 40% at 20% 60%, rgba(201,168,76,.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 30% at 80% 30%, rgba(201,168,76,.05) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 60% at 50% 10%, rgba(255,255,255,.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .marble::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        118deg,
+        transparent 0px, transparent 120px,
+        rgba(201,168,76,.04) 120px, rgba(201,168,76,.04) 121px,
+        transparent 121px, transparent 240px
+      ),
+      repeating-linear-gradient(
+        52deg,
+        transparent 0px, transparent 180px,
+        rgba(255,255,255,.02) 180px, rgba(255,255,255,.02) 181px,
+        transparent 181px, transparent 360px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+  .marble > * { position: relative; z-index: 1; }
+
+  /* ── Gold gradient text ── */
+  .gold-text {
+    background: linear-gradient(135deg, var(--gold-dk) 0%, var(--gold) 40%, var(--gold-lt) 70%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Gold divider ── */
+  .divider {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, var(--gold-dk), var(--gold-lt));
+    border-radius: 2px;
+    margin: 1rem auto;
+  }
+  .divider.right { margin: 1rem 0; }
+
+  /* ════════════════════════════════════════════
+     HEADER / NAV
+  ════════════════════════════════════════════ */
+  header {
+    position: fixed; top: 0; right: 0; left: 0;
+    z-index: 100;
+    background: rgba(9,9,26,.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: .9rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: .7rem;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt));
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--navy);
+  }
+  .logo-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: .88rem;
+    font-weight: 500;
+    margin-right: 1.5rem;
+    transition: color .2s;
+  }
+  nav a:hover { color: var(--gold); }
+
+  .nav-cta {
+    background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt));
+    color: var(--navy) !important;
+    font-weight: 700 !important;
+    padding: .45rem 1.1rem;
+    border-radius: 8px;
+    font-size: .82rem !important;
+  }
+
+  /* ════════════════════════════════════════════
+     HERO
+  ════════════════════════════════════════════ */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--navy) 0%, var(--navy2) 50%, var(--navy3) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8rem 2rem 5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(201,168,76,.12);
+    border: 1px solid rgba(201,168,76,.3);
+    border-radius: 100px;
+    padding: .35rem .9rem;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    max-width: 700px;
+    margin-bottom: 1.2rem;
+  }
+
+  .hero p.sub {
+    font-size: 1.08rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt));
+    color: var(--navy);
+    font-weight: 700;
+    font-size: .95rem;
+    padding: .8rem 2rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    font-weight: 600;
+    font-size: .95rem;
+    padding: .8rem 2rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    margin-top: 4rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--muted);
+    font-size: .78rem;
+  }
+  .scroll-hint .arrow {
+    width: 20px; height: 20px;
+    border-right: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
+    transform: rotate(45deg);
+    animation: scrollBounce 1.6s infinite;
+  }
+  @keyframes scrollBounce {
+    0%,100% { transform: rotate(45deg) translateY(0); }
+    50%      { transform: rotate(45deg) translateY(5px); }
+  }
+
+  /* ════════════════════════════════════════════
+     SERVICES
+  ════════════════════════════════════════════ */
+  .section {
+    padding: 5rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .5rem;
+  }
+
+  .section h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    margin-bottom: .5rem;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.2rem;
+    margin-top: 3rem;
+  }
+
+  .service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 2rem 1.5rem;
+    transition: border-color .25s, transform .2s, box-shadow .25s;
+    cursor: default;
+  }
+  .service-card:hover {
+    border-color: rgba(201,168,76,.45);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,.35);
+  }
+
+  .service-card .icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  .service-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: .5rem;
+  }
+  .service-card p {
+    font-size: .86rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ════════════════════════════════════════════
+     VALUE STRIP
+  ════════════════════════════════════════════ */
+  .value-strip {
+    background: linear-gradient(135deg, var(--navy2), var(--navy3));
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 5rem 2rem;
+  }
+  .value-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .value-inner blockquote {
+    font-size: clamp(1.15rem, 2.8vw, 1.7rem);
+    font-weight: 600;
+    line-height: 1.65;
+    color: var(--text);
+    font-style: normal;
+  }
+  .value-inner blockquote em {
+    font-style: normal;
+  }
+
+  /* stats row */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-item { text-align: center; }
+  .stat-item .num {
+    font-size: 2.2rem;
+    font-weight: 900;
+    display: block;
+  }
+  .stat-item span:last-child {
+    font-size: .8rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ════════════════════════════════════════════
+     INSTAGRAM CTA
+  ════════════════════════════════════════════ */
+  .ig-section {
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+  .ig-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: .9rem 2.2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: opacity .2s, transform .15s;
+    margin-top: 1.5rem;
+  }
+  .ig-btn:hover { opacity: .88; transform: translateY(-2px); }
+  .ig-btn svg { flex-shrink: 0; }
+
+  /* ════════════════════════════════════════════
+     FOOTER
+  ════════════════════════════════════════════ */
+  footer {
+    background: var(--navy);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-size: .8rem;
+    color: var(--muted);
+  }
+  footer span { color: var(--gold); font-weight: 600; }
+
+  /* ════════════════════════════════════════════
+     FLOATING WHATSAPP BUTTON
+  ════════════════════════════════════════════ */
+  .wa-fab {
+    position: fixed;
+    bottom: 1.6rem;
+    left: 1.6rem;   /* left side for RTL */
+    z-index: 200;
+    width: 58px; height: 58px;
+    background: #25D366;
+    border-radius: 50%;
+    box-shadow: 0 6px 24px rgba(37,211,102,.45);
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    border: none;
+  }
+  .wa-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 30px rgba(37,211,102,.6);
+  }
+  .wa-fab .badge {
+    position: absolute;
+    top: -3px; right: -3px;
+    width: 18px; height: 18px;
+    background: #ff3b30;
+    border-radius: 50%;
+    border: 2px solid var(--navy);
+    font-size: .6rem;
+    font-weight: 700;
+    color: #fff;
+    display: grid; place-items: center;
+  }
+
+  /* ════════════════════════════════════════════
+     WHATSAPP CHAT WIDGET
+  ════════════════════════════════════════════ */
+  .wa-widget {
+    position: fixed;
+    bottom: 5rem;
+    left: 1.2rem;
+    z-index: 300;
+    width: 360px;
+    max-width: calc(100vw - 2rem);
+    height: 540px;
+    max-height: calc(100vh - 7rem);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    display: flex;
+    flex-direction: column;
+    transform: scale(.92) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+  }
+  .wa-widget.open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+  }
+
+  /* WA Header */
+  .wa-head {
+    background: var(--wa-green);
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-shrink: 0;
+  }
+  .wa-head .close-btn {
+    background: none; border: none; cursor: pointer;
+    color: rgba(255,255,255,.7);
+    margin-right: auto;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: .2rem;
+    transition: color .15s;
+    margin-left: 0;
+  }
+  .wa-head .close-btn:hover { color: #fff; }
+  .wa-head .av {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt));
+    display: grid; place-items: center;
+    font-weight: 900; font-size: .95rem;
+    color: var(--navy);
+    flex-shrink: 0;
+  }
+  .wa-head .info h3 {
+    font-size: .9rem; font-weight: 700; color: #fff;
+  }
+  .wa-head .info p {
+    font-size: .72rem; color: rgba(255,255,255,.7);
+  }
+
+  /* WA Messages area */
+  .wa-messages {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--wa-bg);
+    padding: 1rem .75rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .wa-messages::-webkit-scrollbar { width: 3px; }
+  .wa-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); }
+
+  /* WA Bubbles */
+  .wa-row {
+    display: flex;
+    align-items: flex-end;
+    gap: .35rem;
+  }
+  .wa-row.user { justify-content: flex-start; }
+  .wa-row.agent { justify-content: flex-end; }
+
+  .wa-bubble {
+    max-width: 76%;
+    padding: .55rem .85rem .45rem;
+    border-radius: 10px;
+    font-size: .86rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+    direction: rtl;
+  }
+  .wa-bubble.agent {
+    background: #fff;
+    border-bottom-right-radius: 3px;
+    color: #111;
+  }
+  .wa-bubble.user {
+    background: var(--wa-bubble);
+    border-bottom-left-radius: 3px;
+    color: #111;
+  }
+  .wa-bubble .ts {
+    font-size: .65rem;
+    color: #888;
+    float: left;
+    margin-top: .2rem;
+    margin-right: .5rem;
+  }
+  .wa-bubble.user .ts { color: #4a9055; }
+
+  /* Typing dots */
+  .wa-typing {
+    background: #fff;
+    border-radius: 10px;
+    border-bottom-right-radius: 3px;
+    padding: .6rem .85rem;
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .wa-typing span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #aaa;
+    animation: waBounce 1.2s infinite;
+  }
+  .wa-typing span:nth-child(2) { animation-delay: .2s; }
+  .wa-typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes waBounce {
+    0%,60%,100% { transform: translateY(0); }
+    30%          { transform: translateY(-5px); }
+  }
+
+  /* WA Input */
+  .wa-input-bar {
+    background: #f0f0f0;
+    padding: .6rem .75rem;
+    display: flex;
+    align-items: flex-end;
+    gap: .5rem;
+    flex-shrink: 0;
+  }
+  .wa-input-bar textarea {
+    flex: 1;
+    background: #fff;
+    border: none;
+    border-radius: 22px;
+    padding: .6rem 1rem;
+    font-family: inherit;
+    font-size: .88rem;
+    resize: none;
+    max-height: 100px;
+    outline: none;
+    line-height: 1.45;
+    direction: rtl;
+    color: #111;
+  }
+  .wa-input-bar textarea::placeholder { color: #aaa; }
+  .wa-send {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--wa-green);
+    border: none;
+    cursor: pointer;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  .wa-send:hover { background: var(--wa-green2); }
+  .wa-send:disabled { opacity: .5; cursor: not-allowed; }
+  .wa-send svg { fill: #fff; }
+
+  /* ════════════════════════════════════════════
+     LOGO IMAGE
+  ════════════════════════════════════════════ */
+  .logo-img {
+    height: 46px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ════════════════════════════════════════════
+     PORTFOLIO
+  ════════════════════════════════════════════ */
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .portfolio-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+  .portfolio-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 56px rgba(0,0,0,.55);
+    border-color: rgba(201,168,76,.5);
+  }
+
+  .card-media {
+    width: 100%;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s;
+    display: block;
+    border-radius: 0;
+  }
+  .portfolio-card:hover .card-media img { transform: scale(1.04); }
+
+  .card-preview {
+    width: 100%;
+    aspect-ratio: 16/10;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: relative;
+    overflow: hidden;
+  }
+  .pilates-bg { background: linear-gradient(135deg, #0d1f2d 0%, #1a3a4a 60%, #0d2435 100%); }
+  .miryam-bg  { background: linear-gradient(135deg, #1c0d2d 0%, #2d1040 60%, #1a0a28 100%); }
+
+  .browser-bar {
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(4px);
+    padding: .4rem .7rem;
+    display: flex;
+    align-items: center;
+    gap: .28rem;
+    flex-shrink: 0;
+  }
+  .browser-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28c840; }
+  .browser-url-bar {
+    flex: 1;
+    background: rgba(255,255,255,.1);
+    border-radius: 4px;
+    padding: .16rem .55rem;
+    font-size: .68rem;
+    color: rgba(255,255,255,.45);
+    font-family: monospace;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 .35rem;
+  }
+
+  .preview-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    padding: 1rem;
+  }
+  .preview-emoji { font-size: 2.6rem; }
+  .preview-site-name { font-size: 1rem; font-weight: 700; color: var(--gold); }
+  .preview-site-url  { font-size: .68rem; color: rgba(255,255,255,.3); font-family: monospace; }
+
+  .card-body { padding: 1.2rem 1.4rem 1.5rem; }
+  .card-tag {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .35rem;
+  }
+  .card-title { font-size: 1.02rem; font-weight: 700; margin-bottom: .4rem; }
+  .card-desc  { font-size: .85rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.55; }
+
+  .view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    border: 1px solid rgba(201,168,76,.4);
+    color: var(--gold);
+    font-size: .82rem;
+    font-weight: 600;
+    padding: .45rem 1rem;
+    border-radius: 8px;
+    transition: background .2s, border-color .2s;
+    text-decoration: none;
+    background: transparent;
+  }
+  .portfolio-card:hover .view-btn {
+    background: rgba(201,168,76,.1);
+    border-color: var(--gold);
+  }
+
+  /* ════════════════════════════════════════════
+     RESPONSIVE
+  ════════════════════════════════════════════ */
+  @media (max-width: 600px) {
+    header { padding: .8rem 1rem; }
+    nav { display: none; }
+    .hero { padding: 7rem 1.25rem 4rem; }
+    .section { padding: 3.5rem 1.25rem; }
+    .value-strip { padding: 3.5rem 1.25rem; }
+    .stats { gap: 2rem; }
+    .wa-widget { left: .5rem; right: .5rem; width: auto; }
+    .wa-fab { left: 1rem; bottom: 1rem; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- ════════ HEADER ════════ -->
+<header>
+  <a href="#" class="logo">
+    <img src="logo.jpg" alt="Prime South" class="logo-img" />
+  </a>
+  <nav>
+    <a href="#services">שירותים</a>
+    <a href="#value">למה אנחנו</a>
+    <a href="#portfolio">עבודות</a>
+    <a href="#" class="nav-cta" id="nav-chat-btn">התחל שיחה</a>
+  </nav>
+</header>
+
+<!-- ════════ HERO ════════ -->
+<section class="marble" style="background: linear-gradient(160deg,#09091a 0%,#0f0f24 60%,#161630 100%);">
+  <div class="hero">
+    <div class="hero-tag">✦ פתרונות קריאייטיב ודיגיטל</div>
+    <h1>
+      <span class="gold-text">עיצוב שמוכר.</span><br />
+      טכנולוגיה שעובדת.
+    </h1>
+    <p class="sub">
+      Prime South מספקת לעסקים דפי נחיתה, פלאיירים, אבות-טיפוס ופתרונות AI –
+      ברמה הגבוהה ביותר בשוק, במחיר שלא תאמין.
+    </p>
+    <div class="hero-btns">
+      <a href="#" class="btn-primary" id="hero-chat-btn">
+        💬 דברו איתנו עכשיו
+      </a>
+      <a href="#services" class="btn-outline">הכירו את השירותים ↓</a>
+    </div>
+    <div class="scroll-hint">
+      <div class="arrow"></div>
+      <span>גלול למטה</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SERVICES ════════ -->
+<section id="services" class="section">
+  <div class="section-label">מה אנחנו עושים</div>
+  <h2>הפתרונות שלנו</h2>
+  <div class="divider right"></div>
+
+  <div class="services-grid">
+    <div class="service-card marble">
+      <div class="icon">🖥️</div>
+      <h3>דפי נחיתה</h3>
+      <p>עיצוב ממיר ואפקטיבי שהופך מבקרים ללקוחות. כל פיקסל מחושב.</p>
+    </div>
+    <div class="service-card marble">
+      <div class="icon">🎨</div>
+      <h3>פלאיירים ועיצוב גרפי</h3>
+      <p>חומרים שיווקיים שתופסים את העין ומעבירים את המסר בצורה חדה.</p>
+    </div>
+    <div class="service-card marble">
+      <div class="icon">⚡</div>
+      <h3>אבות-טיפוס (Prototypes)</h3>
+      <p>מ-Idea להדמיה אינטראקטיבית מלאה – מהיר, מדויק ומוכן להצגה.</p>
+    </div>
+    <div class="service-card marble">
+      <div class="icon">🤖</div>
+      <h3>סוכני AI</h3>
+      <p>בוטים ונציגי AI מותאמים לעסק שלך – 24/7, ללא שגיאות, ממיר לידים.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ VALUE STRIP ════════ -->
+<section id="value" class="value-strip marble">
+  <div class="value-inner">
+    <div class="section-label" style="color:var(--gold);letter-spacing:.1em;">למה Prime South</div>
+    <div class="divider"></div>
+    <blockquote>
+      "אנחנו מאמינים שעסק קטן מגיע לאותה רמת עיצוב כמו תאגיד ענק –
+      <em class="gold-text"> ובמחיר שמתאים לו.</em>
+      כל פרויקט מקבל מאיתנו תשומת לב מלאה, ביצוע חד וממשק ישיר עם האנשים שעושים את העבודה."
+    </blockquote>
+
+    <div class="stats">
+      <div class="stat-item">
+        <span class="num gold-text">100%</span>
+        <span>שביעות רצון לקוחות</span>
+      </div>
+      <div class="stat-item">
+        <span class="num gold-text">48h</span>
+        <span>זמן אספקה ממוצע</span>
+      </div>
+      <div class="stat-item">
+        <span class="num gold-text">∞</span>
+        <span>תיקונים עד שמרוצים</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ PORTFOLIO ════════ -->
+<section id="portfolio" class="section">
+  <div class="section-label">תיק עבודות</div>
+  <h2>העבודות שלנו</h2>
+  <div class="divider right"></div>
+  <p style="color:var(--muted);max-width:520px;font-size:.95rem;margin-top:.6rem;">
+    כל פרויקט נבנה מאפס עם תשומת לב לכל פרט – כי הפרטים הם מה שעושה את ההבדל.
+  </p>
+
+  <div class="portfolio-grid">
+
+    <!-- מור -->
+    <a class="portfolio-card" href="mor.jpg" target="_blank" rel="noopener">
+      <div class="card-media">
+        <img src="mor.jpg" alt="פרויקט מור" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <div class="card-tag">עיצוב גרפי</div>
+        <div class="card-title">פרויקט מור</div>
+        <div class="card-desc">עיצוב שיווקי יוקרתי המדבר אל קהל היעד בשפה הנכונה ומניב תוצאות מדידות.</div>
+        <span class="view-btn">צפייה בפרויקט ↗</span>
+      </div>
+    </a>
+
+    <!-- Pilates Point -->
+    <a class="portfolio-card" href="https://pilates-point.surge.sh" target="_blank" rel="noopener">
+      <div class="card-preview pilates-bg">
+        <div class="browser-bar">
+          <span class="browser-dot dot-r"></span>
+          <span class="browser-dot dot-y"></span>
+          <span class="browser-dot dot-g"></span>
+          <div class="browser-url-bar">pilates-point.surge.sh</div>
+        </div>
+        <div class="preview-body">
+          <div class="preview-emoji">🧘‍♀️</div>
+          <div class="preview-site-name">Pilates Point</div>
+          <div class="preview-site-url">pilates-point.surge.sh</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">דף נחיתה</div>
+        <div class="card-title">Pilates Point – רז אוזן</div>
+        <div class="card-desc">דף נחיתה יוקרתי ומניע לפעולה לסטודיו פילאטיס מוביל – עיצוב נקי שממיר מבקרים ללקוחות.</div>
+        <span class="view-btn">צפייה בפרויקט ↗</span>
+      </div>
+    </a>
+
+    <!-- Miryam Hair -->
+    <a class="portfolio-card" href="https://miryamhair-kev7lukx.manus.space/" target="_blank" rel="noopener">
+      <div class="card-preview miryam-bg">
+        <div class="browser-bar">
+          <span class="browser-dot dot-r"></span>
+          <span class="browser-dot dot-y"></span>
+          <span class="browser-dot dot-g"></span>
+          <div class="browser-url-bar">miryamhair.manus.space</div>
+        </div>
+        <div class="preview-body">
+          <div class="preview-emoji">💇‍♀️</div>
+          <div class="preview-site-name">Miryam Hair</div>
+          <div class="preview-site-url">miryamhair-kev7lukx.manus.space</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">דף נחיתה</div>
+        <div class="card-title">Miryam Hair – מרים</div>
+        <div class="card-desc">פתרון דיגיטלי מלא לסלון יופי אלגנטי – נוכחות אונליין שמושכת לקוחות חדשים.</div>
+        <span class="view-btn">צפייה בפרויקט ↗</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ════════ INSTAGRAM CTA ════════ -->
+<section id="ig" class="ig-section section">
+  <div class="section-label">עקבו אחרינו</div>
+  <h2>ראו עוד עבודות באינסטגרם</h2>
+  <div class="divider"></div>
+  <p style="color:var(--muted);max-width:480px;margin:.75rem auto 0;font-size:.95rem;">
+    הגלריה שלנו מתעדכנת באופן שוטף עם הפרויקטים האחרונים – מוזמנים להתרשם.
+  </p>
+  <a
+    href="https://www.instagram.com/prime_south_"
+    target="_blank"
+    rel="noopener"
+    class="ig-btn"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+    @prime_south_ באינסטגרם
+  </a>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <p>© 2025 <span>Prime South</span> · כל הזכויות שמורות</p>
+  <p style="margin-top:.4rem;">לפניות: נתנאל 052-8325875 | יוסף 054-4879735</p>
+</footer>
+
+<!-- ════════ FLOATING WHATSAPP BUTTON ════════ -->
+<button class="wa-fab" id="wa-fab" aria-label="פתח צ'אט">
+  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.847L.055 23.272a.75.75 0 0 0 .918.918l5.422-1.467A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.692-.515-5.219-1.41l-.375-.22-3.878 1.049 1.05-3.879-.22-.375A9.944 9.944 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+  </svg>
+  <div class="badge">1</div>
+</button>
+
+<!-- ════════ WHATSAPP CHAT WIDGET ════════ -->
+<div class="wa-widget" id="wa-widget">
+  <!-- Header -->
+  <div class="wa-head">
+    <div class="av">PS</div>
+    <div class="info">
+      <h3>Prime South</h3>
+      <p id="wa-status">מחובר · עונה בדרך כלל תוך דקות</p>
+    </div>
+    <button class="close-btn" id="wa-close" aria-label="סגור">✕</button>
+  </div>
+
+  <!-- Messages -->
+  <div class="wa-messages" id="wa-messages"></div>
+
+  <!-- Input -->
+  <div class="wa-input-bar">
+    <textarea
+      id="wa-input"
+      rows="1"
+      placeholder="הקלד הודעה..."
+      dir="rtl"
+    ></textarea>
+    <button class="wa-send" id="wa-send" aria-label="שלח">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- ════════ SCRIPT ════════ -->
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────
+  const API_URL = "/chat";
+
+  // ── State ────────────────────────────────────────────────────────────────
+  const chatHistory = [];
+  let widgetOpen = false;
+
+  // ── DOM ──────────────────────────────────────────────────────────────────
+  const fab       = document.getElementById("wa-fab");
+  const widget    = document.getElementById("wa-widget");
+  const closeBtn  = document.getElementById("wa-close");
+  const messagesEl= document.getElementById("wa-messages");
+  const inputEl   = document.getElementById("wa-input");
+  const sendBtn   = document.getElementById("wa-send");
+  const statusEl  = document.getElementById("wa-status");
+  const badge     = fab.querySelector(".badge");
+
+  // ── Open / close ─────────────────────────────────────────────────────────
+  function openWidget() {
+    widgetOpen = true;
+    widget.classList.add("open");
+    badge.style.display = "none";
+    setTimeout(() => inputEl.focus(), 300);
+    if (messagesEl.childElementCount === 0) showWelcome();
+  }
+  function closeWidget() {
+    widgetOpen = false;
+    widget.classList.remove("open");
+  }
+
+  fab.addEventListener("click", () => widgetOpen ? closeWidget() : openWidget());
+  closeBtn.addEventListener("click", closeWidget);
+  document.getElementById("hero-chat-btn").addEventListener("click", (e) => { e.preventDefault(); openWidget(); });
+  document.getElementById("nav-chat-btn").addEventListener("click", (e) => { e.preventDefault(); openWidget(); });
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function now() {
+    return new Date().toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function scrollDown() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function addBubble(role, text) {
+    const row = document.createElement("div");
+    row.className = `wa-row ${role === "assistant" ? "agent" : "user"}`;
+
+    const bubble = document.createElement("div");
+    bubble.className = `wa-bubble ${role === "assistant" ? "agent" : "user"}`;
+    bubble.innerHTML = `<span class="msg-text">${escHtml(text)}</span><span class="ts">${now()}</span>`;
+
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    scrollDown();
+    return bubble;
+  }
+
+  function addTyping() {
+    const row = document.createElement("div");
+    row.className = "wa-row agent";
+    row.id = "wa-typing";
+    row.innerHTML = `<div class="wa-typing"><span></span><span></span><span></span></div>`;
+    messagesEl.appendChild(row);
+    scrollDown();
+  }
+  function removeTyping() {
+    document.getElementById("wa-typing")?.remove();
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function showWelcome() {
+    addBubble("assistant", "שלום! 👋\nאני הנציג הדיגיטלי של Prime South.\nאשמח לעזור לך עם דפי נחיתה, פלאיירים, אבות-טיפוס וסוכני AI.\nכיצד אוכל לעזור?");
+  }
+
+  // Auto-resize textarea
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + "px";
+  });
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+  sendBtn.addEventListener("click", send);
+
+  // ── Send ──────────────────────────────────────────────────────────────────
+  async function send() {
+    const text = inputEl.value.trim();
+    if (!text || sendBtn.disabled) return;
+
+    addBubble("user", text);
+    chatHistory.push({ role: "user", content: text });
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+    sendBtn.disabled = true;
+    statusEl.textContent = "מקליד...";
+
+    addTyping();
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: chatHistory, stream: true }),
+      });
+
+      if (!res.ok) throw new Error(`שגיאת שרת ${res.status}`);
+
+      removeTyping();
+      const bubble = addBubble("assistant", "");
+      const msgSpan = bubble.querySelector(".msg-text");
+      let fullText = "";
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const p = JSON.parse(line.slice(6));
+            if (p.type === "delta") {
+              fullText += p.text;
+              msgSpan.innerHTML = escHtml(fullText);
+              scrollDown();
+            }
+          } catch (_) {}
+        }
+      }
+
+      chatHistory.push({ role: "assistant", content: fullText });
+      statusEl.textContent = "מחובר · עונה בדרך כלל תוך דקות";
+    } catch (err) {
+      removeTyping();
+      addBubble("assistant", `שגיאה: ${err.message}`);
+      statusEl.textContent = "מחובר";
+    } finally {
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+  }
+</script>
+
+</body>
+</html>
