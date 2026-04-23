@@ -42,24 +42,11 @@ const DEFAULT_SYSTEM = `אתה נציג שירות ומכירות של חברת 
 5. שמור על שיחה חמה וזורמת – אל תהיה רובוטי.
 6. אם הלקוח שואל על שירות שלא ברשימה, אמור שתבדוק ותחזור אליו, ובקש פרטי קשר.`;
 const MODEL = "claude-opus-4-7";
+const TIMEOUT_MS = 10000;
 
-/**
- * POST /chat
- *
- * Body:
- *   messages  - array of { role: "user" | "assistant", content: string }
- *   system    - optional system prompt (defaults to DEFAULT_SYSTEM)
- *   stream    - optional boolean, defaults to false
- *
- * Non-streaming response:
- *   { role: "assistant", content: string, usage: { input_tokens, output_tokens, ... } }
- *
- * Streaming response (stream: true):
- *   Content-Type: text/event-stream
- *   data: { type: "delta", text: "..." }
- *   data: { type: "done", usage: {...} }
- */
 app.post("/chat", async (req, res) => {
+  console.log("--- New Request Received ---");
+
   const { messages, system, stream = false } = req.body;
 
   if (!Array.isArray(messages) || messages.length === 0) {
@@ -68,24 +55,37 @@ app.post("/chat", async (req, res) => {
 
   const systemPrompt = system || DEFAULT_SYSTEM;
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    console.log("!!! TIMEOUT: Aborting Anthropic request after 10s");
+    controller.abort();
+  }, TIMEOUT_MS);
+
   if (stream) {
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
     try {
-      const apiStream = client.messages.stream({
-        model: MODEL,
-        max_tokens: 64000,
-        system: [
-          {
-            type: "text",
-            text: systemPrompt,
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages,
-      });
+      console.log("Sending to Anthropic...");
+      const apiStream = client.messages.stream(
+        {
+          model: MODEL,
+          max_tokens: 64000,
+          system: [
+            {
+              type: "text",
+              text: systemPrompt,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
+          messages,
+        },
+        { signal: controller.signal }
+      );
+
+      console.log("Response received from Anthropic!");
+      clearTimeout(timer);
 
       for await (const event of apiStream) {
         if (
@@ -99,24 +99,33 @@ app.post("/chat", async (req, res) => {
       const final = await apiStream.finalMessage();
       res.write(`data: ${JSON.stringify({ type: "done", usage: final.usage })}\n\n`);
       res.end();
-    } catch (err) {
-      res.write(`data: ${JSON.stringify({ type: "error", error: err.message })}\n\n`);
+    } catch (error) {
+      clearTimeout(timer);
+      console.log("!!! ERROR DETECTED:", JSON.stringify(error, null, 2));
+      res.write(`data: ${JSON.stringify({ type: "error", error: error.message })}\n\n`);
       res.end();
     }
   } else {
     try {
-      const response = await client.messages.create({
-        model: MODEL,
-        max_tokens: 16000,
-        system: [
-          {
-            type: "text",
-            text: systemPrompt,
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages,
-      });
+      console.log("Sending to Anthropic...");
+      const response = await client.messages.create(
+        {
+          model: MODEL,
+          max_tokens: 16000,
+          system: [
+            {
+              type: "text",
+              text: systemPrompt,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
+          messages,
+        },
+        { signal: controller.signal }
+      );
+
+      console.log("Response received from Anthropic!");
+      clearTimeout(timer);
 
       const text = response.content
         .filter((b) => b.type === "text")
@@ -128,9 +137,11 @@ app.post("/chat", async (req, res) => {
         content: text,
         usage: response.usage,
       });
-    } catch (err) {
-      const status = err.status ?? 500;
-      res.status(status).json({ error: err.message });
+    } catch (error) {
+      clearTimeout(timer);
+      console.log("!!! ERROR DETECTED:", JSON.stringify(error, null, 2));
+      const status = error.status ?? 500;
+      res.status(status).json({ error: error.message });
     }
   }
 });
