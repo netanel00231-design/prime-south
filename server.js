@@ -1,12 +1,23 @@
 import Anthropic from "@anthropic-ai/sdk";
 import express from "express";
+import multer from "multer";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "15mb" }));
+app.use(express.urlencoded({ extended: true, limit: "15mb" }));
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
+  },
+});
 
 app.use((_req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -232,16 +243,26 @@ app.get("/accessibility", (_req, res) => res.sendFile(join(__dirname, "accessibi
 // Instagram caption tool
 app.get("/instagram", (_req, res) => res.sendFile(join(__dirname, "instagram.html")));
 
-app.post("/generate-caption", async (req, res) => {
+app.post("/generate-caption", upload.single("image"), async (req, res) => {
   console.log("--- Caption Request ---");
-  const { imageBase64, mediaType, projectType, notes } = req.body;
 
-  if (!imageBase64) return res.status(400).json({ error: "imageBase64 required" });
+  try {
+    if (!req.file) {
+      console.error("!!! No file received in request");
+      return res.status(400).json({ error: "יש להעלות תמונה" });
+    }
 
-  const prompt = `אתה כותב תוכן שיווקי לאינסטגרם עבור Prime South – סוכנות קריאייטיב ודיגיטל.
+    const imageBase64 = req.file.buffer.toString("base64");
+    const mediaType   = req.file.mimetype;
+    const projectType = req.body.projectType || "עיצוב";
+    const notes       = req.body.notes || "";
+
+    console.log(`File received: ${req.file.originalname}, size: ${req.file.size} bytes, type: ${mediaType}`);
+
+    const prompt = `אתה כותב תוכן שיווקי לאינסטגרם עבור Prime South – סוכנות קריאייטיב ודיגיטל.
 בהתבסס על התמונה, כתוב 3 קפשנים שונים בעברית.
 
-סוג פרויקט: ${projectType || "עיצוב"}
+סוג פרויקט: ${projectType}
 ${notes ? `הערות: ${notes}` : ""}
 
 כללים:
@@ -250,7 +271,8 @@ ${notes ? `הערות: ${notes}` : ""}
 - 15-20 האשטאגים (שילוב עברית ואנגלית)
 - גרסה 1: אמוציונלית/סיפורית, גרסה 2: מקצועית/עסקית, גרסה 3: קצרה ודינמית`;
 
-  try {
+    console.log("Sending to Anthropic Vision API...");
+
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
@@ -279,19 +301,28 @@ ${notes ? `הערות: ${notes}` : ""}
       messages: [{
         role: "user",
         content: [
-          { type: "image", source: { type: "base64", media_type: mediaType || "image/jpeg", data: imageBase64 } },
+          {
+            type: "image",
+            source: { type: "base64", media_type: mediaType, data: imageBase64 },
+          },
           { type: "text", text: prompt },
         ],
       }],
     });
 
     const toolBlock = response.content.find(b => b.type === "tool_use");
-    if (!toolBlock) return res.status(500).json({ error: "No captions generated" });
+    if (!toolBlock) {
+      console.error("!!! Anthropic returned no tool_use block. Content:", JSON.stringify(response.content));
+      return res.status(500).json({ error: "לא נוצרו קפשנים, נסה שוב" });
+    }
+
     console.log("Captions generated successfully");
     res.json(toolBlock.input);
+
   } catch (err) {
-    console.log("!!! Caption error:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("!!! Caption error:", err.message);
+    console.error("!!! Full error:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+    res.status(err.status ?? 500).json({ error: err.message });
   }
 });
 

@@ -380,7 +380,7 @@
 <script>
   // ── State ──
   let selectedType = "דף נחיתה";
-  let imageData   = null; // { base64, mediaType }
+  let currentFile  = null; // raw File object – sent via FormData
 
   // ── Type buttons ──
   document.querySelectorAll(".type-btn").forEach(btn => {
@@ -392,14 +392,14 @@
   });
 
   // ── Drop zone ──
-  const dropZone  = document.getElementById("drop-zone");
-  const fileInput = document.getElementById("file-input");
+  const dropZone    = document.getElementById("drop-zone");
+  const fileInput   = document.getElementById("file-input");
   const previewWrap = document.getElementById("preview-wrap");
   const previewImg  = document.getElementById("preview-img");
   const changeBtn   = document.getElementById("change-btn");
 
-  dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
-  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+  dropZone.addEventListener("dragover",  (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
+  dropZone.addEventListener("dragleave", ()  => dropZone.classList.remove("dragover"));
   dropZone.addEventListener("drop", (e) => {
     e.preventDefault();
     dropZone.classList.remove("dragover");
@@ -412,69 +412,42 @@
   fileInput.addEventListener("change", () => {
     if (fileInput.files[0]) processFile(fileInput.files[0]);
   });
-  changeBtn.addEventListener("click", () => {
-    fileInput.value = "";
-    fileInput.click();
-  });
+  changeBtn.addEventListener("click", () => { fileInput.value = ""; fileInput.click(); });
 
   function processFile(file) {
-    compressImage(file).then(data => {
-      imageData = data;
-      previewImg.src = "data:" + data.mediaType + ";base64," + data.base64;
-      dropZone.style.display = "none";
-      previewWrap.style.display = "block";
-    });
-  }
-
-  function compressImage(file, maxPx = 1200, quality = 0.85) {
-    return new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => {
-        const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width  = Math.round(img.width  * scale);
-        canvas.height = Math.round(img.height * scale);
-        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(blob => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve({
-            base64: reader.result.split(",")[1],
-            mediaType: "image/jpeg",
-          });
-          reader.readAsDataURL(blob);
-        }, "image/jpeg", quality);
-      };
-      img.src = URL.createObjectURL(file);
-    });
+    currentFile = file;
+    previewImg.src = URL.createObjectURL(file); // fast preview, no base64 needed
+    dropZone.style.display = "none";
+    previewWrap.style.display = "block";
   }
 
   // ── Generate ──
   const genBtn     = document.getElementById("gen-btn");
   const resultsCol = document.getElementById("results-col");
-  const placeholder = document.getElementById("placeholder");
 
   genBtn.addEventListener("click", async () => {
-    if (!imageData) { alert("יש להעלות תמונה קודם"); return; }
+    if (!currentFile) { alert("יש להעלות תמונה קודם"); return; }
+
     genBtn.disabled = true;
     genBtn.innerHTML = '<div class="spinner"></div> מייצר קפשנים...';
     resultsCol.innerHTML = '<div class="results-placeholder"><div class="big-icon">⏳</div><p>Claude מנתח את התמונה וכותב...</p></div>';
 
     try {
-      const res = await fetch("/generate-caption", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          imageBase64: imageData.base64,
-          mediaType: imageData.mediaType,
-          projectType: selectedType,
-          notes: document.getElementById("notes").value.trim(),
-        }),
-      });
-      if (!res.ok) throw new Error("שגיאת שרת " + res.status);
-      const data = await res.json();
+      // Send as multipart/form-data — no JSON size limit issues
+      const formData = new FormData();
+      formData.append("image",       currentFile);
+      formData.append("projectType", selectedType);
+      formData.append("notes",       document.getElementById("notes").value.trim());
+
+      const res = await fetch("/generate-caption", { method: "POST", body: formData });
+
+      let data;
+      try { data = await res.json(); } catch { throw new Error("תגובה לא תקינה מהשרת"); }
+      if (!res.ok) throw new Error(data.error || "שגיאת שרת " + res.status);
+
       renderCaptions(data.captions);
     } catch (err) {
-      resultsCol.innerHTML = `<div class="results-placeholder"><div class="big-icon">⚠️</div><p>${err.message}</p></div>`;
+      resultsCol.innerHTML = `<div class="results-placeholder"><div class="big-icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
     } finally {
       genBtn.disabled = false;
       genBtn.innerHTML = "✨ צור קפשנים";
