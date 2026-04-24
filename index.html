@@ -761,16 +761,146 @@
     .wa-widget { left: .5rem; right: .5rem; width: auto; }
     .wa-fab { left: 1rem; bottom: 1rem; }
   }
+
+  /* ════════════════════════════════════════════
+     SKIP LINK
+  ════════════════════════════════════════════ */
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    color: var(--navy);
+    padding: .7rem 1.5rem;
+    border-radius: 0 0 10px 10px;
+    font-weight: 700;
+    font-size: .95rem;
+    z-index: 9999;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: top .2s;
+  }
+  .skip-link:focus { top: 0; outline: none; }
+
+  /* ════════════════════════════════════════════
+     FOCUS VISIBLE
+  ════════════════════════════════════════════ */
+  :focus-visible {
+    outline: 3px solid var(--gold) !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
+  }
+
+  /* ════════════════════════════════════════════
+     ACCESSIBILITY WIDGET
+  ════════════════════════════════════════════ */
+  .a11y-trigger {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 500;
+    width: 44px; height: 48px;
+    background: var(--gold);
+    border: none;
+    border-radius: 10px 0 0 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: -2px 0 16px rgba(0,0,0,.4);
+    transition: width .2s;
+    padding: 0;
+  }
+  .a11y-trigger:hover { width: 50px; }
+
+  .a11y-panel {
+    position: fixed;
+    top: 50%;
+    right: 44px;
+    transform: translateY(-50%);
+    z-index: 498;
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 14px 0 0 14px;
+    padding: 1.25rem 1rem;
+    width: 210px;
+    box-shadow: -6px 0 30px rgba(0,0,0,.55);
+    display: none;
+    flex-direction: column;
+    gap: .55rem;
+  }
+  .a11y-panel.open { display: flex; }
+  .a11y-panel-title {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: .2rem;
+    letter-spacing: .04em;
+  }
+  .a11y-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: .82rem;
+    padding: .5rem .75rem;
+    cursor: pointer;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    transition: border-color .15s, background .15s;
+    width: 100%;
+    direction: rtl;
+  }
+  .a11y-btn:hover { border-color: var(--gold); background: rgba(201,168,76,.08); }
+  .a11y-btn.active { background: rgba(201,168,76,.18); border-color: var(--gold); color: var(--gold); }
+  .a11y-font-row { display: flex; gap: .4rem; }
+  .a11y-font-row .a11y-btn {
+    justify-content: center; flex: 1;
+    font-size: 1.05rem; font-weight: 700; padding: .5rem;
+  }
+
+  /* ════════════════════════════════════════════
+     ACCESSIBILITY MODES
+  ════════════════════════════════════════════ */
+  body.a11y-grayscale { filter: grayscale(100%); }
+
+  body.a11y-contrast {
+    --navy:    #000000;
+    --navy2:   #000000;
+    --navy3:   #0a0a0a;
+    --surface: #111111;
+    --text:    #ffffff;
+    --muted:   #dddddd;
+    --gold:    #ffff00;
+    --gold-lt: #ffff66;
+    --gold-dk: #cccc00;
+    --border:  rgba(255,255,0,.5);
+  }
+  body.a11y-contrast .wa-messages     { background: #1a1a1a !important; }
+  body.a11y-contrast .wa-bubble.agent { background: #2a2a2a !important; color: #fff !important; }
+  body.a11y-contrast .wa-bubble.user  { background: #333 !important; color: #fff !important; }
+  body.a11y-contrast header           { background: #000 !important; }
+
+  body.a11y-underline a { text-decoration: underline !important; }
   </style>
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">דלג לתוכן הראשי</a>
+
 <!-- ════════ HEADER ════════ -->
-<header>
-  <a href="#" class="logo">
-    <img src="logo.jpg" alt="Prime South" class="logo-img" />
+<header role="banner">
+  <a href="#" class="logo" aria-label="Prime South – עמוד הבית">
+    <img src="logo.jpg" alt="לוגו Prime South" class="logo-img" />
   </a>
-  <nav>
+  <nav role="navigation" aria-label="ניווט ראשי">
     <a href="#services">שירותים</a>
     <a href="#value">למה אנחנו</a>
     <a href="#portfolio">עבודות</a>
@@ -779,6 +909,7 @@
 </header>
 
 <!-- ════════ HERO ════════ -->
+<main id="main-content">
 <section class="marble" style="background: linear-gradient(160deg,#09091a 0%,#0f0f24 60%,#161630 100%);">
   <div class="hero">
     <div class="hero-tag">✦ פתרונות קריאייטיב ודיגיטל</div>
@@ -955,11 +1086,47 @@
   </a>
 </section>
 
+</main>
+
 <!-- ════════ FOOTER ════════ -->
-<footer>
+<footer role="contentinfo">
   <p>© 2025 <span>Prime South</span> · כל הזכויות שמורות</p>
   <p style="margin-top:.4rem;">לפניות: נתנאל 052-8325875 | יוסף 054-4879735</p>
+  <p style="margin-top:.6rem;">
+    <a href="/accessibility" style="color:var(--gold);text-decoration:underline;font-weight:600;">הצהרת נגישות</a>
+  </p>
 </footer>
+
+<!-- ════════ ACCESSIBILITY WIDGET ════════ -->
+<button
+  id="a11y-trigger"
+  class="a11y-trigger"
+  aria-label="פתח תפריט נגישות"
+  aria-expanded="false"
+  aria-controls="a11y-panel"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <circle cx="12" cy="4" r="2" fill="#09091a"/>
+    <path fill="#09091a" d="M19 11h-5.18C13.4 9.84 12.3 9 11 9s-2.4.84-2.82 2H3v2h5.18C8.6 14.16 9.7 15 11 15s2.4-.84 2.82-2H19v-2z"/>
+    <path fill="#09091a" d="M11 11c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zM8 18c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-3H8v3z"/>
+  </svg>
+</button>
+
+<div
+  id="a11y-panel"
+  class="a11y-panel"
+  role="region"
+  aria-label="תפריט נגישות"
+>
+  <div class="a11y-panel-title">♿ נגישות</div>
+  <div class="a11y-font-row">
+    <button id="a11y-font-up"   class="a11y-btn" aria-label="הגדל גופן">א+</button>
+    <button id="a11y-font-down" class="a11y-btn" aria-label="הקטן גופן">א-</button>
+  </div>
+  <button id="a11y-contrast"  class="a11y-btn" aria-pressed="false">⬛ ניגודיות גבוהה</button>
+  <button id="a11y-grayscale" class="a11y-btn" aria-pressed="false">🔲 מצב אפור</button>
+  <button id="a11y-underline" class="a11y-btn" aria-pressed="false">🔗 הדגשת קישורים</button>
+</div>
 
 <!-- ════════ FLOATING WHATSAPP BUTTON ════════ -->
 <button class="wa-fab" id="wa-fab" aria-label="פתח צ'אט">
@@ -971,7 +1138,7 @@
 </button>
 
 <!-- ════════ WHATSAPP CHAT WIDGET ════════ -->
-<div class="wa-widget" id="wa-widget">
+<div class="wa-widget" id="wa-widget" role="dialog" aria-modal="true" aria-label="צ'אט עם נציג Prime South">
   <!-- Header -->
   <div class="wa-head">
     <div class="av">PS</div>
@@ -992,6 +1159,7 @@
       rows="1"
       placeholder="הקלד הודעה..."
       dir="rtl"
+      aria-label="הקלד הודעה לנציג"
     ></textarea>
     <button class="wa-send" id="wa-send" aria-label="שלח">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
@@ -1153,6 +1321,54 @@
       inputEl.focus();
     }
   }
+
+  // ── Accessibility Widget ──────────────────────────────────────────────────
+  (function () {
+    const trigger = document.getElementById("a11y-trigger");
+    const panel   = document.getElementById("a11y-panel");
+
+    function togglePanel(open) {
+      panel.classList.toggle("open", open);
+      trigger.setAttribute("aria-expanded", String(open));
+    }
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      togglePanel(!panel.classList.contains("open"));
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!panel.contains(e.target) && e.target !== trigger) togglePanel(false);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") togglePanel(false);
+    });
+
+    // Font size
+    let fontSize = 100;
+    document.getElementById("a11y-font-up").addEventListener("click", () => {
+      fontSize = Math.min(fontSize + 10, 150);
+      document.documentElement.style.fontSize = fontSize + "%";
+    });
+    document.getElementById("a11y-font-down").addEventListener("click", () => {
+      fontSize = Math.max(fontSize - 10, 80);
+      document.documentElement.style.fontSize = fontSize + "%";
+    });
+
+    // Toggle modes
+    function makeToggle(btnId, bodyClass) {
+      const btn = document.getElementById(btnId);
+      btn.addEventListener("click", () => {
+        const active = document.body.classList.toggle(bodyClass);
+        btn.classList.toggle("active", active);
+        btn.setAttribute("aria-pressed", String(active));
+      });
+    }
+    makeToggle("a11y-contrast",  "a11y-contrast");
+    makeToggle("a11y-grayscale", "a11y-grayscale");
+    makeToggle("a11y-underline", "a11y-underline");
+  })();
 </script>
 
 </body>

@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import express from "express";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { dirname, join } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -225,6 +225,9 @@ app.post("/chat", async (req, res) => {
     }
   }
 });
+
+// Accessibility statement page
+app.get("/accessibility", (_req, res) => res.sendFile(join(__dirname, "accessibility.html")));
 
 // Health check
 app.get("/health", (_req, res) => res.json({ ok: true }));
