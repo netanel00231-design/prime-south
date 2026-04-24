@@ -247,38 +247,65 @@ app.post("/generate-caption", upload.single("image"), async (req, res) => {
   console.log("--- Caption Request ---");
 
   try {
-    if (!req.file) {
-      console.error("!!! No file received in request");
-      return res.status(400).json({ error: "יש להעלות תמונה" });
+    const { description = "", niche = "כללי", tone = "ויראלי", language = "עברית", contentType = "image" } = req.body;
+
+    if (!description.trim()) {
+      return res.status(400).json({ error: "יש להוסיף תיאור לפוסט" });
     }
 
-    const imageBase64 = req.file.buffer.toString("base64");
-    const mediaType   = req.file.mimetype;
-    const projectType = req.body.projectType || "עיצוב";
-    const notes       = req.body.notes || "";
+    const isReel     = contentType === "reel";
+    const hasImage   = !!req.file && req.file.mimetype.startsWith("image/");
 
-    console.log(`File received: ${req.file.originalname}, size: ${req.file.size} bytes, type: ${mediaType}`);
+    if (req.file) {
+      console.log(`File: ${req.file.originalname}, ${req.file.size} bytes, ${req.file.mimetype}`);
+    } else {
+      console.log("No image file – generating from description only");
+    }
 
-    const prompt = `אתה כותב תוכן שיווקי לאינסטגרם עבור Prime South – סוכנות קריאייטיב ודיגיטל.
-בהתבסס על התמונה, כתוב 3 קפשנים שונים בעברית.
+    const langNote = language === "עברית"  ? "כתוב את כל הקפשנים בעברית בלבד."
+                   : language === "English" ? "Write all captions in English only."
+                   : "כתוב גרסה 1 בעברית, גרסה 2 באנגלית, גרסה 3 שילוב עברית ואנגלית.";
 
-סוג פרויקט: ${projectType}
-${notes ? `הערות: ${notes}` : ""}
+    const prompt = `אתה מומחה שיווק ברשתות חברתיות, מתמחה ביצירת תוכן ויראלי לאינסטגרם.
 
-כללים:
-- פתיחה שמושכת את העין (שורה ראשונה = הכי חשובה)
-- 3-5 שורות תוכן + קריאה לפעולה ברורה
-- 15-20 האשטאגים (שילוב עברית ואנגלית)
-- גרסה 1: אמוציונלית/סיפורית, גרסה 2: מקצועית/עסקית, גרסה 3: קצרה ודינמית`;
+כתוב 3 קפשנים שונים לפוסט אינסטגרם על סמך הפרטים הבאים:
 
-    console.log("Sending to Anthropic Vision API...");
+סוג תוכן: ${isReel ? "ריל (סרטון קצר)" : "תמונה"}
+תחום / נישה: ${niche}
+סגנון רצוי: ${tone}
+תיאור הפוסט ומטרתו: ${description}
+${hasImage ? "** ניתחתי את התמונה המצורפת – השתמש בה כהשראה לקפשנים **" : ""}
+
+${langNote}
+
+דרישות לכל קפשן:
+1. Hook – שורה ראשונה שמושכת את העין ועוצרת גלילה
+2. גוף – 3-4 שורות תוכן עם ערך / סיפור / מידע
+3. קריאה לפעולה ברורה (תייגו חבר, שמרו את הפוסט, כתבו בתגובות וכו')
+4. 20-25 האשטאגים רלוונטיים לתחום ולנישה – שילוב פופולרי עם ממוקד
+
+סגנון הגרסאות:
+- גרסה 1: וו רגשי / סיפורי – מחבר לרגש
+- גרסה 2: ישיר ומכירתי – ממוקד בתוצאה
+- גרסה 3: קצר ודינמי – מתאים לריל ולסטורי`;
+
+    const messageContent = [];
+    if (hasImage) {
+      messageContent.push({
+        type: "image",
+        source: { type: "base64", media_type: req.file.mimetype, data: req.file.buffer.toString("base64") },
+      });
+    }
+    messageContent.push({ type: "text", text: prompt });
+
+    console.log("Sending to Anthropic...");
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
       tools: [{
         name: "output_captions",
-        description: "Return the 3 generated captions",
+        description: "Return the 3 generated Instagram captions",
         input_schema: {
           type: "object",
           properties: {
@@ -298,25 +325,16 @@ ${notes ? `הערות: ${notes}` : ""}
         },
       }],
       tool_choice: { type: "tool", name: "output_captions" },
-      messages: [{
-        role: "user",
-        content: [
-          {
-            type: "image",
-            source: { type: "base64", media_type: mediaType, data: imageBase64 },
-          },
-          { type: "text", text: prompt },
-        ],
-      }],
+      messages: [{ role: "user", content: messageContent }],
     });
 
     const toolBlock = response.content.find(b => b.type === "tool_use");
     if (!toolBlock) {
-      console.error("!!! Anthropic returned no tool_use block. Content:", JSON.stringify(response.content));
+      console.error("!!! No tool_use block:", JSON.stringify(response.content));
       return res.status(500).json({ error: "לא נוצרו קפשנים, נסה שוב" });
     }
 
-    console.log("Captions generated successfully");
+    console.log("Captions generated OK");
     res.json(toolBlock.input);
 
   } catch (err) {

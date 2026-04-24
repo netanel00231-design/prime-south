@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Instagram Caption Generator – Prime South</title>
+  <title>יוצר קפשנים לאינסטגרם – AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -12,16 +12,9 @@
     :root {
       --gold: #c9a84c; --gold-lt: #e8c96a; --gold-dk: #a07830;
       --navy: #09091a; --navy2: #0f0f24; --surface: #1a1a35;
-      --border: rgba(201,168,76,.18); --text: #f2ede3; --muted: #8888aa;
-      --r: 14px;
+      --border: rgba(201,168,76,.18); --text: #f2ede3; --muted: #8888aa; --r: 14px;
     }
-    body {
-      font-family: 'Heebo', sans-serif;
-      background: var(--navy);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
+    body { font-family: 'Heebo', sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; }
     :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
 
     /* ── Header ── */
@@ -29,276 +22,189 @@
       background: rgba(9,9,26,.95);
       border-bottom: 1px solid var(--border);
       padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .logo-text { font-weight: 900; font-size: 1.1rem; color: var(--gold); letter-spacing: .04em; }
-    .page-title { font-size: .9rem; color: var(--muted); }
+    .brand { font-weight: 900; font-size: 1.05rem; color: var(--gold); text-decoration: none; letter-spacing: .04em; }
+    .header-tag {
+      background: rgba(201,168,76,.12);
+      border: 1px solid rgba(201,168,76,.25);
+      color: var(--gold);
+      font-size: .72rem; font-weight: 700;
+      padding: .25rem .75rem;
+      border-radius: 100px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 3rem 2rem 2rem;
+    }
+    .hero h1 { font-size: clamp(1.7rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.2; margin-bottom: .6rem; }
+    .hero p  { color: var(--muted); font-size: .97rem; max-width: 520px; margin: 0 auto; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; justify-content: center; gap: .5rem;
+      margin: 1.8rem auto 0;
+      max-width: 340px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: inherit; font-size: .92rem; font-weight: 700;
+      padding: .65rem 1rem;
+      cursor: pointer;
+      transition: all .15s;
+      display: flex; align-items: center; justify-content: center; gap: .4rem;
+    }
+    .tab-btn:hover { border-color: var(--gold); color: var(--text); }
+    .tab-btn.active { background: rgba(201,168,76,.15); border-color: var(--gold); color: var(--gold); }
 
     /* ── Layout ── */
     .wrapper {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 2rem;
-      align-items: start;
+      max-width: 1060px; margin: 2rem auto; padding: 0 1.5rem 4rem;
+      display: grid; grid-template-columns: 400px 1fr; gap: 1.8rem; align-items: start;
     }
-    @media (max-width: 780px) {
-      .wrapper { grid-template-columns: 1fr; padding: 1rem; }
-    }
+    @media (max-width: 800px) { .wrapper { grid-template-columns: 1fr; } }
 
-    /* ── Upload panel ── */
+    /* ── Panel ── */
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
-    .panel-title {
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: .5rem;
+      display: flex; flex-direction: column; gap: 1.2rem;
     }
 
-    /* Drop zone */
+    /* ── Drop zone ── */
     .drop-zone {
       border: 2px dashed var(--border);
-      border-radius: 10px;
-      padding: 2rem 1rem;
-      text-align: center;
-      cursor: pointer;
+      border-radius: 10px; padding: 1.8rem 1rem;
+      text-align: center; cursor: pointer;
       transition: border-color .2s, background .2s;
-      position: relative;
-      min-height: 160px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: .5rem;
+      position: relative; min-height: 140px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem;
     }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: var(--gold);
-      background: rgba(201,168,76,.05);
-    }
-    .drop-zone input[type="file"] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-    }
-    .drop-icon { font-size: 2.5rem; }
-    .drop-label { font-size: .85rem; color: var(--muted); }
-    .drop-sub { font-size: .75rem; color: rgba(136,136,170,.6); }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--gold); background: rgba(201,168,76,.04); }
+    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .drop-icon { font-size: 2.2rem; }
+    .drop-label { font-size: .85rem; color: var(--muted); font-weight: 500; }
+    .drop-sub { font-size: .72rem; color: rgba(136,136,170,.55); }
 
-    /* Preview */
-    #preview-wrap {
-      display: none;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      position: relative;
-    }
-    #preview-img {
-      width: 100%;
-      display: block;
-      max-height: 260px;
-      object-fit: cover;
-    }
+    /* ── Preview ── */
+    #preview-wrap { display: none; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); position: relative; }
+    #preview-img, #preview-video { width: 100%; display: block; max-height: 240px; object-fit: cover; }
     .preview-change {
-      position: absolute;
-      bottom: .5rem;
-      left: .5rem;
-      background: rgba(0,0,0,.7);
-      color: #fff;
-      font-size: .72rem;
-      font-weight: 600;
-      padding: .3rem .7rem;
-      border-radius: 6px;
-      cursor: pointer;
-      border: none;
-      font-family: inherit;
-      transition: background .15s;
+      position: absolute; bottom: .5rem; left: .5rem;
+      background: rgba(0,0,0,.72); color: #fff;
+      font-size: .72rem; font-weight: 600; padding: .3rem .7rem;
+      border-radius: 6px; cursor: pointer; border: none; font-family: inherit;
     }
-    .preview-change:hover { background: rgba(0,0,0,.9); }
+    .preview-change:hover { background: rgba(0,0,0,.92); }
 
-    /* Project type */
-    .field-label {
-      font-size: .78rem;
-      font-weight: 700;
-      color: var(--gold);
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      margin-bottom: .4rem;
-    }
-    .type-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .4rem;
-    }
-    .type-btn {
-      background: var(--navy2);
+    /* ── Optional image for reel ── */
+    .reel-img-hint {
+      font-size: .78rem; color: var(--muted);
+      background: rgba(201,168,76,.06);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      font-family: inherit;
-      font-size: .82rem;
-      padding: .5rem .75rem;
-      cursor: pointer;
-      text-align: center;
-      transition: all .15s;
+      border-radius: 8px; padding: .6rem .85rem;
     }
-    .type-btn:hover { border-color: var(--gold); color: var(--text); }
-    .type-btn.selected { background: rgba(201,168,76,.15); border-color: var(--gold); color: var(--gold); font-weight: 700; }
 
-    /* Notes */
-    textarea.notes {
-      width: 100%;
-      background: var(--navy2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: inherit;
-      font-size: .85rem;
-      padding: .65rem .85rem;
-      resize: vertical;
-      min-height: 70px;
-      direction: rtl;
-      line-height: 1.5;
-      transition: border-color .15s;
+    /* ── Field label ── */
+    .field-label { font-size: .75rem; font-weight: 700; color: var(--gold); letter-spacing: .07em; text-transform: uppercase; margin-bottom: .35rem; }
+
+    /* ── Description textarea ── */
+    textarea.desc {
+      width: 100%; background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: inherit;
+      font-size: .88rem; padding: .7rem .9rem; resize: vertical; min-height: 90px;
+      direction: rtl; line-height: 1.55; transition: border-color .15s;
     }
-    textarea.notes:focus { outline: none; border-color: var(--gold); }
-    textarea.notes::placeholder { color: var(--muted); }
+    textarea.desc:focus { outline: none; border-color: var(--gold); }
+    textarea.desc::placeholder { color: var(--muted); }
 
-    /* Generate button */
+    /* ── Chip grids ── */
+    .chip-grid { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .chip {
+      background: var(--navy2); border: 1px solid var(--border); border-radius: 100px;
+      color: var(--muted); font-family: inherit; font-size: .8rem; font-weight: 500;
+      padding: .35rem .85rem; cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .chip:hover { border-color: var(--gold); color: var(--text); }
+    .chip.selected { background: rgba(201,168,76,.15); border-color: var(--gold); color: var(--gold); font-weight: 700; }
+
+    /* ── Row of 3 options ── */
+    .row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; }
+    .opt-btn {
+      background: var(--navy2); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--muted); font-family: inherit; font-size: .78rem; font-weight: 500;
+      padding: .5rem .4rem; cursor: pointer; transition: all .15s; text-align: center;
+    }
+    .opt-btn:hover { border-color: var(--gold); color: var(--text); }
+    .opt-btn.selected { background: rgba(201,168,76,.15); border-color: var(--gold); color: var(--gold); font-weight: 700; }
+
+    /* ── Generate button ── */
     .gen-btn {
       width: 100%;
       background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt));
-      color: var(--navy);
-      font-family: inherit;
-      font-weight: 800;
-      font-size: .95rem;
-      padding: .85rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: opacity .2s, transform .15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: .5rem;
+      color: var(--navy); font-family: inherit; font-weight: 900;
+      font-size: 1rem; padding: .9rem; border: none; border-radius: 10px;
+      cursor: pointer; transition: opacity .2s, transform .15s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
     }
     .gen-btn:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
     .gen-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
     /* ── Results ── */
-    .results-col {}
     .results-placeholder {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 3rem 2rem;
-      text-align: center;
-      color: var(--muted);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 4rem 2rem; text-align: center; color: var(--muted);
     }
-    .results-placeholder .big-icon { font-size: 3rem; margin-bottom: .75rem; }
+    .results-placeholder .big-icon { font-size: 3.2rem; margin-bottom: .75rem; }
+    .results-placeholder p:first-of-type { font-weight: 700; font-size: 1rem; margin-bottom: .3rem; }
 
-    .caption-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      margin-bottom: 1.2rem;
-      overflow: hidden;
-      transition: border-color .2s;
-    }
+    .caption-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 1.2rem; overflow: hidden; }
     .caption-card:hover { border-color: rgba(201,168,76,.35); }
-
     .card-head {
-      background: rgba(201,168,76,.07);
-      border-bottom: 1px solid var(--border);
-      padding: .75rem 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      background: rgba(201,168,76,.07); border-bottom: 1px solid var(--border);
+      padding: .75rem 1.2rem; display: flex; align-items: center; justify-content: space-between;
     }
-    .card-num {
-      font-size: .78rem;
-      font-weight: 700;
-      color: var(--gold);
-      letter-spacing: .06em;
-      text-transform: uppercase;
-    }
-
+    .card-num { font-size: .77rem; font-weight: 700; color: var(--gold); letter-spacing: .06em; text-transform: uppercase; }
     .copy-btn {
-      background: rgba(201,168,76,.12);
-      border: 1px solid rgba(201,168,76,.3);
-      border-radius: 7px;
-      color: var(--gold);
-      font-family: inherit;
-      font-size: .78rem;
-      font-weight: 700;
-      padding: .3rem .8rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: .35rem;
-      transition: background .15s;
+      background: rgba(201,168,76,.12); border: 1px solid rgba(201,168,76,.3);
+      border-radius: 7px; color: var(--gold); font-family: inherit;
+      font-size: .78rem; font-weight: 700; padding: .3rem .8rem;
+      cursor: pointer; display: flex; align-items: center; gap: .35rem; transition: background .15s;
     }
     .copy-btn:hover { background: rgba(201,168,76,.22); }
     .copy-btn.copied { background: rgba(39,174,96,.15); border-color: #27ae60; color: #2ecc71; }
-
-    .card-body {
-      padding: 1.2rem;
-    }
+    .card-body { padding: 1.2rem; }
     .caption-text {
-      font-size: .88rem;
-      line-height: 1.7;
-      color: var(--text);
-      white-space: pre-wrap;
-      direction: rtl;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      padding: .5rem;
-      min-height: 60px;
-      transition: border-color .15s, background .15s;
-      cursor: text;
-      outline: none;
+      font-size: .88rem; line-height: 1.75; color: var(--text);
+      white-space: pre-wrap; direction: rtl;
+      border: 1px solid transparent; border-radius: 8px; padding: .5rem;
+      min-height: 60px; transition: border-color .15s, background .15s;
+      cursor: text; outline: none;
     }
-    .caption-text:focus {
-      border-color: var(--border);
-      background: rgba(255,255,255,.03);
-    }
+    .caption-text:focus { border-color: var(--border); background: rgba(255,255,255,.03); }
 
-    /* Loading spinner */
-    .spinner {
-      width: 20px; height: 20px;
-      border: 2px solid rgba(9,9,26,.4);
-      border-top-color: var(--navy);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
+    /* ── Spinner ── */
+    .spinner { width: 20px; height: 20px; border: 2px solid rgba(9,9,26,.3); border-top-color: var(--navy); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Toast */
+    /* ── Toast ── */
     .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
+      position: fixed; bottom: 2rem; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: #27ae60;
-      color: #fff;
-      font-weight: 700;
-      font-size: .88rem;
-      padding: .7rem 1.5rem;
-      border-radius: 50px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.4);
-      transition: transform .3s;
-      z-index: 999;
-      pointer-events: none;
+      background: #27ae60; color: #fff; font-weight: 700; font-size: .88rem;
+      padding: .7rem 1.5rem; border-radius: 50px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4); transition: transform .3s;
+      z-index: 999; pointer-events: none;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
   </style>
@@ -306,69 +212,129 @@
 <body>
 
 <header>
-  <a href="/" style="text-decoration:none;" aria-label="חזרה לדף הבית">
-    <span class="logo-text">Prime South</span>
-  </a>
-  <span style="color:var(--border);">|</span>
-  <span class="page-title">✨ יוצר קפשנים לאינסטגרם</span>
+  <a href="/" class="brand" aria-label="Prime South – עמוד הבית">Prime South</a>
+  <span class="header-tag">✨ AI Caption Generator</span>
 </header>
 
+<!-- Hero -->
+<div class="hero">
+  <h1>יוצר קפשנים לאינסטגרם<br><span style="background:linear-gradient(135deg,var(--gold-dk),var(--gold-lt));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">מבוסס בינה מלאכותית</span></h1>
+  <p>העלה תמונה או ריל, תאר מה אתה מעלה ומה המטרה — נכין לך 3 קפשנים מושלמים עם האשטאגים</p>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" id="tab-image" role="tab" aria-selected="true"  aria-controls="panel-image">📸 תמונה</button>
+    <button class="tab-btn"        id="tab-reel"  role="tab" aria-selected="false" aria-controls="panel-reel" >🎬 ריל</button>
+  </div>
+</div>
+
+<!-- Main grid -->
 <div class="wrapper">
 
-  <!-- ── LEFT: Upload + Options ── -->
+  <!-- LEFT: options -->
   <div class="panel" role="form" aria-label="הגדרות ייצור קפשן">
-    <div class="panel-title">📸 העלאת תמונה</div>
 
-    <!-- Drop zone -->
-    <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="לחץ או גרור תמונה להעלאה">
-      <input type="file" id="file-input" accept="image/*" aria-label="בחר קובץ תמונה"/>
-      <div class="drop-icon">🖼️</div>
-      <div class="drop-label">לחץ או גרור תמונה לכאן</div>
-      <div class="drop-sub">JPG, PNG, WEBP · עד 10MB</div>
-    </div>
-
-    <!-- Preview -->
-    <div id="preview-wrap">
-      <img id="preview-img" alt="תצוגה מקדימה של התמונה שהועלתה"/>
-      <button class="preview-change" id="change-btn" aria-label="החלף תמונה">🔄 החלף</button>
-    </div>
-
-    <!-- Project type -->
-    <div>
-      <div class="field-label">סוג פרויקט</div>
-      <div class="type-grid" role="group" aria-label="בחר סוג פרויקט">
-        <button class="type-btn selected" data-type="דף נחיתה">🖥️ דף נחיתה</button>
-        <button class="type-btn" data-type="פלאייר">🎨 פלאייר</button>
-        <button class="type-btn" data-type="סוכן AI">🤖 סוכן AI</button>
-        <button class="type-btn" data-type="Prototype">⚡ Prototype</button>
-        <button class="type-btn" data-type="עיצוב גרפי">✏️ עיצוב גרפי</button>
-        <button class="type-btn" data-type="אחר">📦 אחר</button>
+    <!-- IMAGE tab upload -->
+    <div id="panel-image" role="tabpanel" aria-labelledby="tab-image">
+      <div class="field-label">העלה תמונה</div>
+      <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="לחץ או גרור תמונה להעלאה">
+        <input type="file" id="file-input" accept="image/*" aria-label="בחר קובץ תמונה"/>
+        <div class="drop-icon">🖼️</div>
+        <div class="drop-label">לחץ או גרור תמונה לכאן</div>
+        <div class="drop-sub">JPG, PNG, WEBP · עד 10MB</div>
       </div>
     </div>
 
-    <!-- Notes -->
+    <!-- REEL tab upload -->
+    <div id="panel-reel" role="tabpanel" aria-labelledby="tab-reel" style="display:none;">
+      <div class="field-label">העלה את הריל</div>
+      <div class="drop-zone" id="drop-zone-reel" tabindex="0" role="button" aria-label="לחץ או גרור סרטון להעלאה">
+        <input type="file" id="file-input-reel" accept="video/*" aria-label="בחר קובץ סרטון"/>
+        <div class="drop-icon">🎬</div>
+        <div class="drop-label">לחץ או גרור סרטון לכאן</div>
+        <div class="drop-sub">MP4, MOV · עד 10MB</div>
+      </div>
+      <div class="reel-img-hint" style="margin-top:.6rem;">
+        💡 <strong>טיפ:</strong> אפשר גם להעלות תמונת שער לריל — הבינה תנתח אותה ותכין קפשן מדויק יותר
+      </div>
+      <div class="drop-zone" id="drop-zone-reel-thumb" tabindex="0" role="button" style="margin-top:.6rem;min-height:100px;" aria-label="העלה תמונת שער לריל (אופציונלי)">
+        <input type="file" id="file-input-reel-thumb" accept="image/*" aria-label="בחר תמונת שער (אופציונלי)"/>
+        <div class="drop-icon" style="font-size:1.6rem;">🖼️</div>
+        <div class="drop-label" style="font-size:.8rem;">תמונת שער – אופציונלי</div>
+      </div>
+    </div>
+
+    <!-- Shared preview -->
+    <div id="preview-wrap" style="display:none;">
+      <img id="preview-img" alt="תצוגה מקדימה" style="display:none;"/>
+      <video id="preview-video" controls style="display:none;max-height:200px;width:100%;"></video>
+      <button class="preview-change" id="change-btn" aria-label="החלף קובץ">🔄 החלף</button>
+    </div>
+
+    <!-- Description (required) -->
     <div>
-      <div class="field-label">הערות לסוכן (אופציונלי)</div>
+      <div class="field-label">תאר את הפוסט ומטרתו <span style="color:#ff6b6b;">*</span></div>
       <textarea
-        class="notes"
-        id="notes"
-        placeholder="למשל: ללקוח בתחום הפיטנס, דגש על מחיר אטרקטיבי..."
-        aria-label="הערות נוספות לסוכן הכתיבה"
+        class="desc" id="description" required
+        placeholder="לדוגמה: תמונה שלי בבגד ים בים, רוצה לקדם את הדף שלי ולהגדיל עוקבים...&#10;או: סרטון של לפני/אחרי שיפוץ דירה, מטרה – לייצר לידים לעסק"
+        aria-label="תיאור הפוסט ומטרתו"
       ></textarea>
     </div>
 
+    <!-- Niche -->
+    <div>
+      <div class="field-label">תחום / נישה</div>
+      <div class="chip-grid" id="niche-group" role="group" aria-label="בחר תחום">
+        <button class="chip selected" data-val="כללי">🌟 כללי</button>
+        <button class="chip" data-val="אופנה וסטייל">👗 אופנה</button>
+        <button class="chip" data-val="כושר ובריאות">💪 כושר</button>
+        <button class="chip" data-val="יופי וטיפוח">💄 יופי</button>
+        <button class="chip" data-val="אוכל ומסעדות">🍕 אוכל</button>
+        <button class="chip" data-val="עסקים ופיננסים">💼 עסקים</button>
+        <button class="chip" data-val="נדל\"ן ועיצוב">🏠 נדל"ן</button>
+        <button class="chip" data-val="טיולים ואורח חיים">✈️ טיולים</button>
+        <button class="chip" data-val="צילום ואמנות">📸 צילום</button>
+        <button class="chip" data-val="חינוך וקורסים">🎓 חינוך</button>
+        <button class="chip" data-val="בריאות ורפואה">🧬 בריאות</button>
+        <button class="chip" data-val="חיות מחמד">🐾 חיות</button>
+      </div>
+    </div>
+
+    <!-- Tone -->
+    <div>
+      <div class="field-label">סגנון הפוסט</div>
+      <div class="row3" id="tone-group" role="group" aria-label="בחר סגנון">
+        <button class="opt-btn selected" data-val="ויראלי ואנרגטי">🔥 ויראלי</button>
+        <button class="opt-btn" data-val="מקצועי ואמין">💼 מקצועי</button>
+        <button class="opt-btn" data-val="אישי וחמים">💛 אישי</button>
+        <button class="opt-btn" data-val="מכירתי וממיר">🎯 מכירתי</button>
+        <button class="opt-btn" data-val="מצחיק ומשעשע">😂 הומור</button>
+        <button class="opt-btn" data-val="מעורר השראה">✨ השראה</button>
+      </div>
+    </div>
+
+    <!-- Language -->
+    <div>
+      <div class="field-label">שפה</div>
+      <div class="row3" id="lang-group" role="group" aria-label="בחר שפה">
+        <button class="opt-btn selected" data-val="עברית">🇮🇱 עברית</button>
+        <button class="opt-btn" data-val="English">🇺🇸 English</button>
+        <button class="opt-btn" data-val="שתיים">🌍 שתיהן</button>
+      </div>
+    </div>
+
     <!-- Generate -->
-    <button class="gen-btn" id="gen-btn" aria-label="יצירת קפשנים לאינסטגרם">
+    <button class="gen-btn" id="gen-btn" aria-label="יצירת קפשנים">
       ✨ צור קפשנים
     </button>
   </div>
 
-  <!-- ── RIGHT: Results ── -->
-  <div class="results-col" id="results-col" aria-live="polite" aria-label="קפשנים שנוצרו">
+  <!-- RIGHT: results -->
+  <div id="results-col" aria-live="polite" aria-label="קפשנים שנוצרו">
     <div class="results-placeholder" id="placeholder">
-      <div class="big-icon">📋</div>
-      <p style="font-weight:600;margin-bottom:.4rem;">הקפשנים יופיעו כאן</p>
-      <p style="font-size:.85rem;">העלה תמונה ולחץ "צור קפשנים"</p>
+      <div class="big-icon">✍️</div>
+      <p>הקפשנים יופיעו כאן</p>
+      <p style="font-size:.85rem;">תאר את הפוסט, בחר סגנון ולחץ על "צור קפשנים"</p>
     </div>
   </div>
 
@@ -379,46 +345,95 @@
 
 <script>
   // ── State ──
-  let selectedType = "דף נחיתה";
-  let currentFile  = null; // raw File object – sent via FormData
+  let currentFile      = null; // image file
+  let currentReelFile  = null; // video file
+  let currentThumbFile = null; // reel thumbnail
+  let activeTab        = "image";
+  let selectedNiche    = "כללי";
+  let selectedTone     = "ויראלי ואנרגטי";
+  let selectedLang     = "עברית";
 
-  // ── Type buttons ──
-  document.querySelectorAll(".type-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("selected"));
-      btn.classList.add("selected");
-      selectedType = btn.dataset.type;
+  // ── Tabs ──
+  document.getElementById("tab-image").addEventListener("click", () => switchTab("image"));
+  document.getElementById("tab-reel").addEventListener("click",  () => switchTab("reel"));
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.getElementById("tab-image").classList.toggle("active", tab === "image");
+    document.getElementById("tab-reel").classList.toggle("active",  tab === "reel");
+    document.getElementById("tab-image").setAttribute("aria-selected", String(tab === "image"));
+    document.getElementById("tab-reel").setAttribute("aria-selected",  String(tab === "reel"));
+    document.getElementById("panel-image").style.display = tab === "image" ? "" : "none";
+    document.getElementById("panel-reel").style.display  = tab === "reel"  ? "" : "none";
+    resetPreview();
+  }
+
+  // ── Chip / option selectors ──
+  function makeSelector(groupId, setter) {
+    document.getElementById(groupId).querySelectorAll("[data-val]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.getElementById(groupId).querySelectorAll("[data-val]").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        setter(btn.dataset.val);
+      });
     });
+  }
+  makeSelector("niche-group", v => selectedNiche = v);
+  makeSelector("tone-group",  v => selectedTone  = v);
+  makeSelector("lang-group",  v => selectedLang   = v);
+
+  // ── File handlers ──
+  setupDrop("drop-zone",            "file-input",            "image", f => { currentFile = f;      showPreview(f, "image"); });
+  setupDrop("drop-zone-reel",       "file-input-reel",       "video", f => { currentReelFile = f;  showPreview(f, "video"); });
+  setupDrop("drop-zone-reel-thumb", "file-input-reel-thumb", "image", f => { currentThumbFile = f; });
+
+  function setupDrop(zoneId, inputId, accept, onFile) {
+    const zone  = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    if (!zone || !input) return;
+
+    zone.addEventListener("dragover",  e => { e.preventDefault(); zone.classList.add("dragover"); });
+    zone.addEventListener("dragleave", ()  => zone.classList.remove("dragover"));
+    zone.addEventListener("drop", e => {
+      e.preventDefault(); zone.classList.remove("dragover");
+      const f = e.dataTransfer.files[0];
+      if (f) onFile(f);
+    });
+    zone.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } });
+    input.addEventListener("change", () => { if (input.files[0]) onFile(input.files[0]); });
+  }
+
+  document.getElementById("change-btn").addEventListener("click", () => {
+    resetPreview();
+    if (activeTab === "image") document.getElementById("file-input").click();
+    else document.getElementById("file-input-reel").click();
   });
 
-  // ── Drop zone ──
-  const dropZone    = document.getElementById("drop-zone");
-  const fileInput   = document.getElementById("file-input");
-  const previewWrap = document.getElementById("preview-wrap");
-  const previewImg  = document.getElementById("preview-img");
-  const changeBtn   = document.getElementById("change-btn");
+  function showPreview(file, type) {
+    const wrap  = document.getElementById("preview-wrap");
+    const img   = document.getElementById("preview-img");
+    const video = document.getElementById("preview-video");
+    wrap.style.display = "block";
+    if (type === "image") {
+      img.src = URL.createObjectURL(file);
+      img.style.display = "block";
+      video.style.display = "none";
+    } else {
+      video.src = URL.createObjectURL(file);
+      video.style.display = "block";
+      img.style.display = "none";
+    }
+    // Hide the relevant drop zone
+    document.getElementById(activeTab === "image" ? "drop-zone" : "drop-zone-reel").style.display = "none";
+  }
 
-  dropZone.addEventListener("dragover",  (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
-  dropZone.addEventListener("dragleave", ()  => dropZone.classList.remove("dragover"));
-  dropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropZone.classList.remove("dragover");
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) processFile(file);
-  });
-  dropZone.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
-  });
-  fileInput.addEventListener("change", () => {
-    if (fileInput.files[0]) processFile(fileInput.files[0]);
-  });
-  changeBtn.addEventListener("click", () => { fileInput.value = ""; fileInput.click(); });
-
-  function processFile(file) {
-    currentFile = file;
-    previewImg.src = URL.createObjectURL(file); // fast preview, no base64 needed
-    dropZone.style.display = "none";
-    previewWrap.style.display = "block";
+  function resetPreview() {
+    currentFile = currentReelFile = currentThumbFile = null;
+    document.getElementById("preview-wrap").style.display = "none";
+    ["drop-zone", "drop-zone-reel"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "";
+    });
   }
 
   // ── Generate ──
@@ -426,18 +441,29 @@
   const resultsCol = document.getElementById("results-col");
 
   genBtn.addEventListener("click", async () => {
-    if (!currentFile) { alert("יש להעלות תמונה קודם"); return; }
+    const description = document.getElementById("description").value.trim();
+    if (!description) {
+      document.getElementById("description").focus();
+      document.getElementById("description").style.borderColor = "#ff6b6b";
+      setTimeout(() => document.getElementById("description").style.borderColor = "", 2000);
+      return;
+    }
 
     genBtn.disabled = true;
     genBtn.innerHTML = '<div class="spinner"></div> מייצר קפשנים...';
-    resultsCol.innerHTML = '<div class="results-placeholder"><div class="big-icon">⏳</div><p>Claude מנתח את התמונה וכותב...</p></div>';
+    resultsCol.innerHTML = '<div class="results-placeholder"><div class="big-icon">⏳</div><p>הבינה מלאכותית כותבת...</p><p style="font-size:.83rem;">זה לוקח כ-10 שניות</p></div>';
 
     try {
-      // Send as multipart/form-data — no JSON size limit issues
       const formData = new FormData();
-      formData.append("image",       currentFile);
-      formData.append("projectType", selectedType);
-      formData.append("notes",       document.getElementById("notes").value.trim());
+      formData.append("description",  description);
+      formData.append("niche",        selectedNiche);
+      formData.append("tone",         selectedTone);
+      formData.append("language",     selectedLang);
+      formData.append("contentType",  activeTab);
+
+      // Attach image file if available
+      const imageFile = activeTab === "image" ? currentFile : currentThumbFile;
+      if (imageFile) formData.append("image", imageFile);
 
       const res = await fetch("/generate-caption", { method: "POST", body: formData });
 
@@ -454,62 +480,47 @@
     }
   });
 
+  // ── Render ──
   function renderCaptions(captions) {
+    if (!captions || !captions.length) {
+      resultsCol.innerHTML = '<div class="results-placeholder"><div class="big-icon">⚠️</div><p>לא נוצרו קפשנים, נסה שוב</p></div>';
+      return;
+    }
     resultsCol.innerHTML = captions.map((cap, i) => `
       <div class="caption-card">
         <div class="card-head">
-          <span class="card-num">${cap.title || "גרסה " + (i + 1)}</span>
-          <button class="copy-btn" data-index="${i}" aria-label="העתק קפשן ${i + 1}">
-            📋 העתק
-          </button>
+          <span class="card-num">${escHtml(cap.title || "גרסה " + (i + 1))}</span>
+          <button class="copy-btn" data-index="${i}" aria-label="העתק קפשן ${i + 1}">📋 העתק</button>
         </div>
         <div class="card-body">
-          <div
-            class="caption-text"
-            contenteditable="true"
-            id="cap-${i}"
-            dir="rtl"
-            aria-label="קפשן ${i + 1} – ניתן לעריכה"
-            role="textbox"
-            aria-multiline="true"
+          <div class="caption-text" contenteditable="true" id="cap-${i}" dir="rtl"
+            role="textbox" aria-multiline="true" aria-label="קפשן ${i + 1} – ניתן לעריכה"
           >${escHtml(cap.text)}</div>
         </div>
       </div>
     `).join("");
 
-    // Copy buttons
     document.querySelectorAll(".copy-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        const idx = btn.dataset.index;
-        const text = document.getElementById("cap-" + idx).innerText;
+        const text = document.getElementById("cap-" + btn.dataset.index).innerText;
         navigator.clipboard.writeText(text).then(() => {
-          btn.classList.add("copied");
-          btn.textContent = "✅ הועתק!";
+          btn.classList.add("copied"); btn.textContent = "✅ הועתק!";
           showToast();
-          setTimeout(() => {
-            btn.classList.remove("copied");
-            btn.innerHTML = "📋 העתק";
-          }, 2500);
+          setTimeout(() => { btn.classList.remove("copied"); btn.innerHTML = "📋 העתק"; }, 2500);
         });
       });
     });
   }
 
   function escHtml(str) {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\n/g, "<br>");
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
   }
 
-  // ── Toast ──
   function showToast() {
     const t = document.getElementById("toast");
     t.classList.add("show");
     setTimeout(() => t.classList.remove("show"), 2200);
   }
 </script>
-
 </body>
 </html>
