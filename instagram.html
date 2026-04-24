@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Instagram Caption Generator – Prime South</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #c9a84c; --gold-lt: #e8c96a; --gold-dk: #a07830;
+      --navy: #09091a; --navy2: #0f0f24; --surface: #1a1a35;
+      --border: rgba(201,168,76,.18); --text: #f2ede3; --muted: #8888aa;
+      --r: 14px;
+    }
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+    /* ── Header ── */
+    header {
+      background: rgba(9,9,26,.95);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo-text { font-weight: 900; font-size: 1.1rem; color: var(--gold); letter-spacing: .04em; }
+    .page-title { font-size: .9rem; color: var(--muted); }
+
+    /* ── Layout ── */
+    .wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 780px) {
+      .wrapper { grid-template-columns: 1fr; padding: 1rem; }
+    }
+
+    /* ── Upload panel ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--gold);
+      background: rgba(201,168,76,.05);
+    }
+    .drop-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .drop-icon { font-size: 2.5rem; }
+    .drop-label { font-size: .85rem; color: var(--muted); }
+    .drop-sub { font-size: .75rem; color: rgba(136,136,170,.6); }
+
+    /* Preview */
+    #preview-wrap {
+      display: none;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    #preview-img {
+      width: 100%;
+      display: block;
+      max-height: 260px;
+      object-fit: cover;
+    }
+    .preview-change {
+      position: absolute;
+      bottom: .5rem;
+      left: .5rem;
+      background: rgba(0,0,0,.7);
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 600;
+      padding: .3rem .7rem;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: background .15s;
+    }
+    .preview-change:hover { background: rgba(0,0,0,.9); }
+
+    /* Project type */
+    .field-label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: .4rem;
+    }
+    .type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .4rem;
+    }
+    .type-btn {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: .82rem;
+      padding: .5rem .75rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all .15s;
+    }
+    .type-btn:hover { border-color: var(--gold); color: var(--text); }
+    .type-btn.selected { background: rgba(201,168,76,.15); border-color: var(--gold); color: var(--gold); font-weight: 700; }
+
+    /* Notes */
+    textarea.notes {
+      width: 100%;
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: .85rem;
+      padding: .65rem .85rem;
+      resize: vertical;
+      min-height: 70px;
+      direction: rtl;
+      line-height: 1.5;
+      transition: border-color .15s;
+    }
+    textarea.notes:focus { outline: none; border-color: var(--gold); }
+    textarea.notes::placeholder { color: var(--muted); }
+
+    /* Generate button */
+    .gen-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt));
+      color: var(--navy);
+      font-family: inherit;
+      font-weight: 800;
+      font-size: .95rem;
+      padding: .85rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+    }
+    .gen-btn:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
+    .gen-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* ── Results ── */
+    .results-col {}
+    .results-placeholder {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--muted);
+    }
+    .results-placeholder .big-icon { font-size: 3rem; margin-bottom: .75rem; }
+
+    .caption-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      margin-bottom: 1.2rem;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .caption-card:hover { border-color: rgba(201,168,76,.35); }
+
+    .card-head {
+      background: rgba(201,168,76,.07);
+      border-bottom: 1px solid var(--border);
+      padding: .75rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-num {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .copy-btn {
+      background: rgba(201,168,76,.12);
+      border: 1px solid rgba(201,168,76,.3);
+      border-radius: 7px;
+      color: var(--gold);
+      font-family: inherit;
+      font-size: .78rem;
+      font-weight: 700;
+      padding: .3rem .8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      transition: background .15s;
+    }
+    .copy-btn:hover { background: rgba(201,168,76,.22); }
+    .copy-btn.copied { background: rgba(39,174,96,.15); border-color: #27ae60; color: #2ecc71; }
+
+    .card-body {
+      padding: 1.2rem;
+    }
+    .caption-text {
+      font-size: .88rem;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      direction: rtl;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: .5rem;
+      min-height: 60px;
+      transition: border-color .15s, background .15s;
+      cursor: text;
+      outline: none;
+    }
+    .caption-text:focus {
+      border-color: var(--border);
+      background: rgba(255,255,255,.03);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(9,9,26,.4);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #27ae60;
+      color: #fff;
+      font-weight: 700;
+      font-size: .88rem;
+      padding: .7rem 1.5rem;
+      border-radius: 50px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      transition: transform .3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" style="text-decoration:none;" aria-label="חזרה לדף הבית">
+    <span class="logo-text">Prime South</span>
+  </a>
+  <span style="color:var(--border);">|</span>
+  <span class="page-title">✨ יוצר קפשנים לאינסטגרם</span>
+</header>
+
+<div class="wrapper">
+
+  <!-- ── LEFT: Upload + Options ── -->
+  <div class="panel" role="form" aria-label="הגדרות ייצור קפשן">
+    <div class="panel-title">📸 העלאת תמונה</div>
+
+    <!-- Drop zone -->
+    <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="לחץ או גרור תמונה להעלאה">
+      <input type="file" id="file-input" accept="image/*" aria-label="בחר קובץ תמונה"/>
+      <div class="drop-icon">🖼️</div>
+      <div class="drop-label">לחץ או גרור תמונה לכאן</div>
+      <div class="drop-sub">JPG, PNG, WEBP · עד 10MB</div>
+    </div>
+
+    <!-- Preview -->
+    <div id="preview-wrap">
+      <img id="preview-img" alt="תצוגה מקדימה של התמונה שהועלתה"/>
+      <button class="preview-change" id="change-btn" aria-label="החלף תמונה">🔄 החלף</button>
+    </div>
+
+    <!-- Project type -->
+    <div>
+      <div class="field-label">סוג פרויקט</div>
+      <div class="type-grid" role="group" aria-label="בחר סוג פרויקט">
+        <button class="type-btn selected" data-type="דף נחיתה">🖥️ דף נחיתה</button>
+        <button class="type-btn" data-type="פלאייר">🎨 פלאייר</button>
+        <button class="type-btn" data-type="סוכן AI">🤖 סוכן AI</button>
+        <button class="type-btn" data-type="Prototype">⚡ Prototype</button>
+        <button class="type-btn" data-type="עיצוב גרפי">✏️ עיצוב גרפי</button>
+        <button class="type-btn" data-type="אחר">📦 אחר</button>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div>
+      <div class="field-label">הערות לסוכן (אופציונלי)</div>
+      <textarea
+        class="notes"
+        id="notes"
+        placeholder="למשל: ללקוח בתחום הפיטנס, דגש על מחיר אטרקטיבי..."
+        aria-label="הערות נוספות לסוכן הכתיבה"
+      ></textarea>
+    </div>
+
+    <!-- Generate -->
+    <button class="gen-btn" id="gen-btn" aria-label="יצירת קפשנים לאינסטגרם">
+      ✨ צור קפשנים
+    </button>
+  </div>
+
+  <!-- ── RIGHT: Results ── -->
+  <div class="results-col" id="results-col" aria-live="polite" aria-label="קפשנים שנוצרו">
+    <div class="results-placeholder" id="placeholder">
+      <div class="big-icon">📋</div>
+      <p style="font-weight:600;margin-bottom:.4rem;">הקפשנים יופיעו כאן</p>
+      <p style="font-size:.85rem;">העלה תמונה ולחץ "צור קפשנים"</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">✅ הועתק ללוח!</div>
+
+<script>
+  // ── State ──
+  let selectedType = "דף נחיתה";
+  let imageData   = null; // { base64, mediaType }
+
+  // ── Type buttons ──
+  document.querySelectorAll(".type-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selectedType = btn.dataset.type;
+    });
+  });
+
+  // ── Drop zone ──
+  const dropZone  = document.getElementById("drop-zone");
+  const fileInput = document.getElementById("file-input");
+  const previewWrap = document.getElementById("preview-wrap");
+  const previewImg  = document.getElementById("preview-img");
+  const changeBtn   = document.getElementById("change-btn");
+
+  dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
+  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) processFile(file);
+  });
+  dropZone.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
+  });
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files[0]) processFile(fileInput.files[0]);
+  });
+  changeBtn.addEventListener("click", () => {
+    fileInput.value = "";
+    fileInput.click();
+  });
+
+  function processFile(file) {
+    compressImage(file).then(data => {
+      imageData = data;
+      previewImg.src = "data:" + data.mediaType + ";base64," + data.base64;
+      dropZone.style.display = "none";
+      previewWrap.style.display = "block";
+    });
+  }
+
+  function compressImage(file, maxPx = 1200, quality = 0.85) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve({
+            base64: reader.result.split(",")[1],
+            mediaType: "image/jpeg",
+          });
+          reader.readAsDataURL(blob);
+        }, "image/jpeg", quality);
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  // ── Generate ──
+  const genBtn     = document.getElementById("gen-btn");
+  const resultsCol = document.getElementById("results-col");
+  const placeholder = document.getElementById("placeholder");
+
+  genBtn.addEventListener("click", async () => {
+    if (!imageData) { alert("יש להעלות תמונה קודם"); return; }
+    genBtn.disabled = true;
+    genBtn.innerHTML = '<div class="spinner"></div> מייצר קפשנים...';
+    resultsCol.innerHTML = '<div class="results-placeholder"><div class="big-icon">⏳</div><p>Claude מנתח את התמונה וכותב...</p></div>';
+
+    try {
+      const res = await fetch("/generate-caption", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageBase64: imageData.base64,
+          mediaType: imageData.mediaType,
+          projectType: selectedType,
+          notes: document.getElementById("notes").value.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error("שגיאת שרת " + res.status);
+      const data = await res.json();
+      renderCaptions(data.captions);
+    } catch (err) {
+      resultsCol.innerHTML = `<div class="results-placeholder"><div class="big-icon">⚠️</div><p>${err.message}</p></div>`;
+    } finally {
+      genBtn.disabled = false;
+      genBtn.innerHTML = "✨ צור קפשנים";
+    }
+  });
+
+  function renderCaptions(captions) {
+    resultsCol.innerHTML = captions.map((cap, i) => `
+      <div class="caption-card">
+        <div class="card-head">
+          <span class="card-num">${cap.title || "גרסה " + (i + 1)}</span>
+          <button class="copy-btn" data-index="${i}" aria-label="העתק קפשן ${i + 1}">
+            📋 העתק
+          </button>
+        </div>
+        <div class="card-body">
+          <div
+            class="caption-text"
+            contenteditable="true"
+            id="cap-${i}"
+            dir="rtl"
+            aria-label="קפשן ${i + 1} – ניתן לעריכה"
+            role="textbox"
+            aria-multiline="true"
+          >${escHtml(cap.text)}</div>
+        </div>
+      </div>
+    `).join("");
+
+    // Copy buttons
+    document.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = btn.dataset.index;
+        const text = document.getElementById("cap-" + idx).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.classList.add("copied");
+          btn.textContent = "✅ הועתק!";
+          showToast();
+          setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.innerHTML = "📋 העתק";
+          }, 2500);
+        });
+      });
+    });
+  }
+
+  function escHtml(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\n/g, "<br>");
+  }
+
+  // ── Toast ──
+  function showToast() {
+    const t = document.getElementById("toast");
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2200);
+  }
+</script>
+
+</body>
+</html>

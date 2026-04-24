@@ -229,6 +229,72 @@ app.post("/chat", async (req, res) => {
 // Accessibility statement page
 app.get("/accessibility", (_req, res) => res.sendFile(join(__dirname, "accessibility.html")));
 
+// Instagram caption tool
+app.get("/instagram", (_req, res) => res.sendFile(join(__dirname, "instagram.html")));
+
+app.post("/generate-caption", async (req, res) => {
+  console.log("--- Caption Request ---");
+  const { imageBase64, mediaType, projectType, notes } = req.body;
+
+  if (!imageBase64) return res.status(400).json({ error: "imageBase64 required" });
+
+  const prompt = `אתה כותב תוכן שיווקי לאינסטגרם עבור Prime South – סוכנות קריאייטיב ודיגיטל.
+בהתבסס על התמונה, כתוב 3 קפשנים שונים בעברית.
+
+סוג פרויקט: ${projectType || "עיצוב"}
+${notes ? `הערות: ${notes}` : ""}
+
+כללים:
+- פתיחה שמושכת את העין (שורה ראשונה = הכי חשובה)
+- 3-5 שורות תוכן + קריאה לפעולה ברורה
+- 15-20 האשטאגים (שילוב עברית ואנגלית)
+- גרסה 1: אמוציונלית/סיפורית, גרסה 2: מקצועית/עסקית, גרסה 3: קצרה ודינמית`;
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 2048,
+      tools: [{
+        name: "output_captions",
+        description: "Return the 3 generated captions",
+        input_schema: {
+          type: "object",
+          properties: {
+            captions: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  text:  { type: "string" },
+                },
+                required: ["title", "text"],
+              },
+            },
+          },
+          required: ["captions"],
+        },
+      }],
+      tool_choice: { type: "tool", name: "output_captions" },
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: mediaType || "image/jpeg", data: imageBase64 } },
+          { type: "text", text: prompt },
+        ],
+      }],
+    });
+
+    const toolBlock = response.content.find(b => b.type === "tool_use");
+    if (!toolBlock) return res.status(500).json({ error: "No captions generated" });
+    console.log("Captions generated successfully");
+    res.json(toolBlock.input);
+  } catch (err) {
+    console.log("!!! Caption error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Health check
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
