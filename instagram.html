@@ -118,6 +118,16 @@
     /* ── Field label ── */
     .field-label { font-size: .75rem; font-weight: 700; color: var(--gold); letter-spacing: .07em; text-transform: uppercase; margin-bottom: .35rem; }
 
+    /* ── Text input (business name) ── */
+    input.text-field {
+      width: 100%; background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: inherit;
+      font-size: .88rem; padding: .7rem .9rem;
+      direction: rtl; transition: border-color .15s;
+    }
+    input.text-field:focus { outline: none; border-color: var(--gold); }
+    input.text-field::placeholder { color: var(--muted); }
+
     /* ── Description textarea ── */
     textarea.desc {
       width: 100%; background: var(--navy2); border: 1px solid var(--border);
@@ -387,6 +397,16 @@
       <button class="preview-change" id="change-btn" aria-label="החלף קובץ">🔄 החלף</button>
     </div>
 
+    <!-- Business name (optional) -->
+    <div>
+      <label class="field-label" for="business-name">שם העסק / מותג</label>
+      <input
+        class="text-field" id="business-name" type="text"
+        placeholder="לדוגמה: Studio 54, מאפיית הבית, Dr. Cohen Clinic..."
+        autocomplete="organization"
+      />
+    </div>
+
     <!-- Description (required) -->
     <div>
       <label class="field-label" for="description">
@@ -517,13 +537,40 @@
 
 <script>
   // ── State ──
-  let currentFile      = null; // image file
-  let currentReelFile  = null; // video file
-  let currentThumbFile = null; // reel thumbnail
+  let currentFile      = null;
+  let currentReelFile  = null;
+  let currentThumbFile = null;
   let activeTab        = "image";
   let selectedNiche    = "כללי";
   let selectedTone     = "ויראלי ואנרגטי";
   let selectedLang     = "עברית";
+
+  // ── Rotating loading messages ──
+  const LOADING_STEPS = [
+    "מנתח את הפוסט...",
+    "בונה את ה-Hook...",
+    "כותב גרסה 1...",
+    "כותב גרסה 2...",
+    "כותב גרסה 3...",
+    "מוסיף האשטאגים...",
+    "מסיים ועורך..."
+  ];
+  let loadingTimer = null;
+
+  function startLoading() {
+    let i = 0;
+    resultsCol.innerHTML = `<div class="results-placeholder"><div class="big-icon">⏳</div><p id="loading-msg">${LOADING_STEPS[0]}</p><p style="font-size:.83rem;color:var(--muted);">זה לוקח כ-15 שניות</p></div>`;
+    loadingTimer = setInterval(() => {
+      i = (i + 1) % LOADING_STEPS.length;
+      const el = document.getElementById("loading-msg");
+      if (el) el.textContent = LOADING_STEPS[i];
+    }, 2200);
+  }
+
+  function stopLoading() {
+    clearInterval(loadingTimer);
+    loadingTimer = null;
+  }
 
   // ── Tabs ──
   document.getElementById("tab-image").addEventListener("click", () => switchTab("image"));
@@ -687,15 +734,17 @@
 
     genBtn.disabled = true;
     genBtn.innerHTML = '<div class="spinner"></div> מייצר קפשנים...';
-    resultsCol.innerHTML = '<div class="results-placeholder"><div class="big-icon">⏳</div><p>הבינה מלאכותית כותבת...</p><p style="font-size:.83rem;">זה לוקח כ-10 שניות</p></div>';
+    startLoading();
 
     try {
+      const businessName = document.getElementById("business-name").value.trim();
       const formData = new FormData();
       formData.append("description",  description);
       formData.append("niche",        selectedNiche);
       formData.append("tone",         selectedTone);
       formData.append("language",     selectedLang);
       formData.append("contentType",  activeTab);
+      if (businessName) formData.append("businessName", businessName);
 
       // Attach image file if available
       const imageFile = activeTab === "image" ? currentFile : currentThumbFile;
@@ -707,8 +756,10 @@
       try { data = await res.json(); } catch { throw new Error("תגובה לא תקינה מהשרת"); }
       if (!res.ok) throw new Error(data.error || "שגיאת שרת " + res.status);
 
+      stopLoading();
       renderCaptions(data.captions);
     } catch (err) {
+      stopLoading();
       resultsCol.innerHTML = `<div class="results-placeholder"><div class="big-icon">⚠️</div><p style="font-weight:700;margin-bottom:.4rem;">${escHtml(friendlyError(err.message))}</p><p style="font-size:.82rem;color:var(--muted);">אם הבעיה חוזרת, נסה תמונה קטנה יותר או שנה את הפורמט ל-JPG</p></div>`;
     } finally {
       genBtn.disabled = false;
