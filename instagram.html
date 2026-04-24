@@ -208,6 +208,58 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
+    /* ── CTA Banner ── */
+    .cta-banner {
+      display: block;
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, #0d1f6e 0%, #1a3bbf 50%, #0d1f6e 100%);
+      border: 1px solid rgba(100,140,255,.35);
+      border-radius: var(--r);
+      padding: 1.4rem 1.8rem;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(13,31,110,.55), 0 0 0 1px rgba(100,140,255,.12);
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-banner:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(13,31,110,.7), 0 0 0 1px rgba(100,140,255,.3);
+      border-color: rgba(100,140,255,.6);
+    }
+    .cta-banner:focus-visible {
+      outline: 3px solid var(--gold) !important;
+      outline-offset: 3px !important;
+    }
+    .cta-inner {
+      display: flex; align-items: center; gap: 1.1rem;
+      position: relative; z-index: 1;
+    }
+    .cta-emoji { font-size: 2.2rem; flex-shrink: 0; }
+    .cta-text { flex: 1; display: flex; flex-direction: column; gap: .2rem; }
+    .cta-title {
+      font-size: 1.05rem; font-weight: 800; color: #fff; line-height: 1.3;
+    }
+    .cta-sub {
+      font-size: .82rem; color: rgba(180,200,255,.8); font-weight: 400;
+    }
+    .cta-arrow {
+      font-size: 1.6rem; color: var(--gold); flex-shrink: 0;
+      transition: transform .2s;
+    }
+    .cta-banner:hover .cta-arrow { transform: translateX(-5px); }
+    @media (max-width: 500px) {
+      .cta-inner { gap: .75rem; }
+      .cta-emoji { font-size: 1.7rem; }
+      .cta-title { font-size: .93rem; }
+    }
+
     /* ── Skip link ── */
     .skip-link {
       position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
@@ -397,13 +449,32 @@
     </button>
   </div>
 
-  <!-- RIGHT: results -->
+  <!-- RIGHT: results + CTA -->
+  <div>
   <div id="results-col" role="region" aria-live="polite" aria-atomic="true" aria-relevant="additions text" aria-label="תוצאות – קפשנים שנוצרו">
     <div class="results-placeholder" id="placeholder">
       <div class="big-icon">✍️</div>
       <p>הקפשנים יופיעו כאן</p>
       <p style="font-size:.85rem;">תאר את הפוסט, בחר סגנון ולחץ על "צור קפשנים"</p>
     </div>
+  </div>
+
+  <!-- CTA -->
+  <a
+    href="/"
+    class="cta-banner"
+    aria-label="לחצו להקמת דף נחיתה מקצועי עם סוכן AI – Prime South"
+  >
+    <div class="cta-inner">
+      <span class="cta-emoji" aria-hidden="true">🚀</span>
+      <div class="cta-text">
+        <span class="cta-title">רוצים דף נחיתה חכם כזה לעסק שלכם?</span>
+        <span class="cta-sub">הקמת דף נחיתה מקצועי + סוכן AI שמייצר לידים — לחצו ונדבר</span>
+      </div>
+      <span class="cta-arrow" aria-hidden="true">←</span>
+    </div>
+  </a>
+
   </div>
 
 </div>
